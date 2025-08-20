@@ -1,0 +1,169 @@
+/* Custom Image Bank Styles */
+
+:root {
+    --primary-color: #8b5cf6; /* Roxo */
+    --secondary-color: #6366f1; /* Indigo */
+    --success-color: #10b981; /* Verde */
+    --info-color: #06b6d4; /* Ciano */
+}
+
+/* Header e Sidebar */
+.sidebar-header, .modal-header {
+    background: linear-gradient(135deg, var(--primary-color ), var(--secondary-color));
+}
+
+.sidebar-nav .nav-link.active {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+}
+
+.sidebar-nav .nav-link:hover {
+    border-left-color: var(--primary-color);
+}
+
+/* Stats Cards */
+.stats-card::before {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+}
+
+.stats-icon.bg-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+/* Botões */
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+/* Galeria de Imagens */
+.image-card {
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.image-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.image-card .card-img-top {
+    height: 200px;
+    object-fit: cover;
+    background-color: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: #9ca3af;
+}
+
+.image-card .card-body {
+    padding: 1rem;
+}
+
+.image-card .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.image-card .card-text {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.image-card .tags-container {
+    margin-top: 0.5rem;
+    height: 45px;
+    overflow: hidden;
+}
+
+.image-card .tag {
+    display: inline-block;
+    background-color: rgba(139, 92, 246, 0.1);
+    color: var(--primary-color);
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    margin-right: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.image-card .status-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.status-disponivel { background-color: var(--success-color); }
+.status-em_uso { background-color: var(--info-color); }
+.status-arquivada { background-color: #6b7280; }
+
+/* Modal de Detalhes */
+#image-preview-container {
+    background-color: #f8fafc;
+    border-radius: 15px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+#image-preview-container img, #image-preview-container .file-icon {
+    max-width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+#image-preview-container .file-icon {
+    font-size: 8rem;
+    color: #cbd5e1;
+}
+
+#image-details-container h4 {
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+#image-details-container .detail-item {
+    margin-bottom: 1rem;
+}
+
+#image-details-container .detail-label {
+    font-weight: 600;
+    color: #4b5563;
+    font-size: 0.875rem;
+}
+
+#image-details-container .detail-value {
+    font-size: 1rem;
+    color: #1f2937;
+}
+
+#image-details-container .tags-container .tag {
+    background-color: rgba(139, 92, 246, 0.1);
+    color: var(--primary-color);
+    padding: 0.3rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-right: 0.3rem;
+    margin-bottom: 0.3rem;
+}

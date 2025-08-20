@@ -1,0 +1,126 @@
+/* Custom Sewing Module Styles */
+
+:root {
+    --costura-primary: #f97316; /* Laranja */
+    --costura-secondary: #ea580c;
+    --fila-bg: #f8fafc;
+    --card-bg: #ffffff;
+    --card-shadow: 0 3px 10px rgba(0,0,0,0.08 );
+}
+
+/* Estilos gerais do módulo */
+.sidebar-header, .modal-header {
+    background: linear-gradient(135deg, var(--costura-primary), var(--costura-secondary));
+}
+.sidebar-nav .nav-link.active {
+    background: linear-gradient(90deg, var(--costura-primary), var(--costura-secondary));
+}
+.sidebar-nav .nav-link:hover {
+    border-left-color: var(--costura-primary);
+}
+.stats-card::before {
+    background: linear-gradient(90deg, var(--costura-primary), var(--costura-secondary));
+}
+.stats-icon.bg-primary { background: linear-gradient(135deg, var(--costura-primary), var(--costura-secondary)); }
+.stats-icon.bg-success { background: linear-gradient(135deg, #10b981, #059669); }
+.stats-icon.bg-info { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
+.stats-icon.bg-secondary { background: linear-gradient(135deg, #64748b, #475569); }
+
+/* Fila de Costura */
+#costura-fila-container {
+    background-color: var(--fila-bg);
+    padding: 1.5rem;
+    border-radius: 15px;
+}
+
+.costura-card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 120px;
+    border: 1px solid #e2e8f0;
+}
+
+.costura-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+    border-color: var(--costura-primary);
+}
+
+.costura-card-sku {
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: 'Courier New', Courier, monospace;
+    color: #1e293b;
+}
+
+.costura-card-status {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #64748b;
+}
+
+.costura-card.checked {
+    background-color: #f0fdf4;
+    border-color: #10b981;
+}
+
+.costura-card.checked .costura-card-sku {
+    text-decoration: line-through;
+    color: #9ca3af;
+}
+
+.costura-card.checked .costura-card-status {
+    color: #10b981;
+    font-weight: 600;
+}
+
+/* Controle de Usuários (Admin) */
+.user-control-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+}
+.user-control-card .card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: #f8fafc;
+}
+.user-control-card .card-header img {
+    width: 40px;
+    height: 40px;
+}
+.user-control-card .form-check-label {
+    font-size: 0.9rem;
+}
+.user-control-card .form-switch .form-check-input {
+    width: 3em;
+    height: 1.5em;
+}
+
+/* Modal de Checklist */
+#checklist-container .form-check {
+    padding: 0.75rem 1.25rem;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    transition: background-color 0.2s ease;
+}
+#checklist-container .form-check:hover {
+    background-color: #f1f5f9;
+}
+#checklist-container .form-check-input {
+    width: 1.25em;
+    height: 1.25em;
+    margin-top: 0.2em;
+}
+#checklist-container .form-check-label {
+    font-size: 1rem;
+    font-weight: 500;
+}

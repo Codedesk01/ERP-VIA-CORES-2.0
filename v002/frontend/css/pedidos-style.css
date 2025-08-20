@@ -1,0 +1,765 @@
+/* Estilos Específicos do Módulo de Pedidos */
+
+:root {
+    --pedidos-primary: #4f46e5;
+    --pedidos-secondary: #6366f1;
+    --shopee-color: #ee4d2d;
+    --ml-color: #fff159;
+    --ml-text: #333333;
+    --producao-color: #06b6d4;
+    --costura-color: #10b981;
+    --expedicao-color: #6366f1;
+    --impressora-color: #8b5cf6;
+}
+
+/* Cores específicas dos marketplaces */
+.bg-shopee {
+    background-color: var(--shopee-color) !important;
+}
+
+.text-shopee {
+    color: var(--shopee-color) !important;
+}
+
+.border-shopee {
+    border-left: 4px solid var(--shopee-color) !important;
+}
+
+.btn-shopee {
+    background-color: var(--shopee-color);
+    border-color: var(--shopee-color);
+    color: white;
+}
+
+.btn-shopee:hover {
+    background-color: #d63c1e;
+    border-color: #d63c1e;
+    color: white;
+}
+
+.btn-outline-shopee {
+    border-color: var(--shopee-color);
+    color: var(--shopee-color);
+}
+
+.btn-outline-shopee:hover {
+    background-color: var(--shopee-color);
+    border-color: var(--shopee-color);
+    color: white;
+}
+
+.bg-ml {
+    background-color: var(--ml-color) !important;
+}
+
+.text-ml {
+    color: var(--ml-text) !important;
+}
+
+.border-ml {
+    border-left: 4px solid var(--ml-color) !important;
+}
+
+.btn-ml {
+    background-color: var(--ml-color);
+    border-color: var(--ml-color);
+    color: var(--ml-text);
+}
+
+.btn-ml:hover {
+    background-color: #e6d64d;
+    border-color: #e6d64d;
+    color: var(--ml-text);
+}
+
+.btn-outline-ml {
+    border-color: var(--ml-color);
+    color: var(--ml-text);
+}
+
+.btn-outline-ml:hover {
+    background-color: var(--ml-color);
+    border-color: var(--ml-color);
+    color: var(--ml-text);
+}
+
+/* Cards dos Marketplaces */
+.marketplace-card {
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.marketplace-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.shopee-card .card-header {
+    background: linear-gradient(135deg, var(--shopee-color), #d63c1e) !important;
+}
+
+.ml-card .card-header {
+    background: linear-gradient(135deg, var(--ml-color), #e6d64d) !important;
+}
+
+/* Boxes dos pedidos dos marketplaces */
+.marketplace-pedido-box {
+    transition: all 0.3s ease;
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+}
+
+.marketplace-pedido-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.marketplace-pedido-box.border-shopee {
+    border-left: 4px solid var(--shopee-color);
+}
+
+.marketplace-pedido-box.border-ml {
+    border-left: 4px solid var(--ml-color);
+}
+
+.marketplace-pedido-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--pedidos-primary), var(--pedidos-secondary));
+}
+
+/* Cards das impressoras */
+.impressora-card {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.impressora-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.impressora-card .card-header {
+    background: linear-gradient(135deg, var(--impressora-color), #7c3aed);
+    color: white;
+    border-radius: 15px 15px 0 0;
+}
+
+/* Status badges específicos dos pedidos */
+.status-badge-pedido {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.status-pendente {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.status-aguardando-arte {
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.status-sem-estoque {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.status-producao {
+    background: rgba(6, 182, 212, 0.1);
+    color: #06b6d4;
+    border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+.status-costura {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.status-expedicao {
+    background: rgba(99, 102, 241, 0.1);
+    color: #6366f1;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.status-enviado {
+    background: rgba(5, 150, 105, 0.1);
+    color: #059669;
+    border: 1px solid rgba(5, 150, 105, 0.2);
+}
+
+/* Indicadores de estoque nos pedidos */
+.estoque-indicator {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.estoque-indicator.com-estoque {
+    color: var(--success-color);
+}
+
+.estoque-indicator.sem-estoque {
+    color: var(--danger-color);
+}
+
+.estoque-indicator::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+/* Tabelas específicas do módulo de pedidos */
+.pedidos-table .marketplace-badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+}
+
+.pedidos-table .sku-cell {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+}
+
+/* Fila de impressão */
+.fila-impressao-item {
+    background: white;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--impressora-color);
+}
+
+.fila-impressao-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.fila-impressao-item.em-impressao {
+    border-left-color: var(--warning-color);
+    background: rgba(245, 158, 11, 0.02);
+}
+
+.fila-impressao-item.concluida {
+    border-left-color: var(--success-color);
+    background: rgba(16, 185, 129, 0.02);
+}
+
+/* Níveis de tinta das impressoras */
+.nivel-tinta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.nivel-tinta-bar {
+    flex: 1;
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.nivel-tinta-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+    border-radius: 3px;
+}
+
+.nivel-tinta-fill.preto {
+    background: linear-gradient(90deg, #374151, #111827);
+}
+
+.nivel-tinta-fill.ciano {
+    background: linear-gradient(90deg, #06b6d4, #0891b2);
+}
+
+.nivel-tinta-fill.magenta {
+    background: linear-gradient(90deg, #ec4899, #db2777);
+}
+
+.nivel-tinta-fill.amarelo {
+    background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+/* Relatórios específicos */
+.relatorio-pedidos .metric-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.relatorio-pedidos .metric-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.relatorio-pedidos .metric-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--pedidos-primary);
+    margin-bottom: 0.5rem;
+}
+
+.relatorio-pedidos .metric-label {
+    color: #6b7280;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Timeline de histórico */
+.historico-timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.historico-timeline::before {
+    content: '';
+    position: absolute;
+    left: 0.75rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, var(--pedidos-primary), transparent);
+}
+
+.historico-item {
+    position: relative;
+    margin-bottom: 1.5rem;
+    background: white;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.historico-item::before {
+    content: '';
+    position: absolute;
+    left: -1.75rem;
+    top: 1rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--pedidos-primary);
+    border: 3px solid white;
+    box-shadow: 0 0 0 2px var(--pedidos-primary);
+}
+
+.historico-item.sucesso::before {
+    background: var(--success-color);
+    box-shadow: 0 0 0 2px var(--success-color);
+}
+
+.historico-item.erro::before {
+    background: var(--danger-color);
+    box-shadow: 0 0 0 2px var(--danger-color);
+}
+
+.historico-item.warning::before {
+    background: var(--warning-color);
+    box-shadow: 0 0 0 2px var(--warning-color);
+}
+
+/* Upload de arte */
+.upload-area {
+    border: 2px dashed #d1d5db;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.upload-area:hover {
+    border-color: var(--pedidos-primary);
+    background: rgba(79, 70, 229, 0.02);
+}
+
+.upload-area.dragover {
+    border-color: var(--pedidos-primary);
+    background: rgba(79, 70, 229, 0.05);
+    transform: scale(1.02);
+}
+
+.upload-icon {
+    font-size: 3rem;
+    color: #9ca3af;
+    margin-bottom: 1rem;
+}
+
+.upload-area:hover .upload-icon {
+    color: var(--pedidos-primary);
+}
+
+/* Progresso de upload */
+.upload-progress {
+    margin-top: 1rem;
+    display: none;
+}
+
+.upload-progress.show {
+    display: block;
+}
+
+.upload-progress-bar {
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.upload-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pedidos-primary), var(--pedidos-secondary));
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* Filtros avançados */
+.filtros-avancados {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.filtros-avancados .form-label {
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.filtros-avancados .form-control,
+.filtros-avancados .form-select {
+    border-radius: 8px;
+    border: 2px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.filtros-avancados .form-control:focus,
+.filtros-avancados .form-select:focus {
+    border-color: var(--pedidos-primary);
+    box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.25);
+}
+
+/* Estatísticas do dashboard */
+.dashboard-stats .stats-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-stats .stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--pedidos-primary), var(--pedidos-secondary));
+}
+
+.dashboard-stats .stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-stats .stats-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--pedidos-primary);
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-stats .stats-label {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-stats .stats-change {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Gráficos personalizados */
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin: 1rem 0;
+}
+
+.chart-container canvas {
+    border-radius: 10px;
+}
+
+/* Modais específicos */
+.modal-pedidos .modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-pedidos .modal-header {
+    border-radius: 15px 15px 0 0;
+    background: linear-gradient(135deg, var(--pedidos-primary), var(--pedidos-secondary));
+    color: white;
+    border-bottom: none;
+}
+
+.modal-pedidos .modal-header .btn-close {
+    filter: invert(1);
+}
+
+/* Animações específicas */
+.pedido-card-enter {
+    animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.status-change {
+    animation: pulse 0.6s ease-in-out;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Responsividade específica */
+@media (max-width: 768px) {
+    .marketplace-pedido-box {
+        margin-bottom: 1rem;
+    }
+    
+    .impressora-card {
+        margin-bottom: 1rem;
+    }
+    
+    .dashboard-stats .stats-card {
+        margin-bottom: 1rem;
+    }
+    
+    .filtros-avancados {
+        padding: 1rem;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+}
+
+@media (max-width: 576px) {
+    .marketplace-pedido-box .card-body {
+        padding: 1rem;
+    }
+    
+    .dashboard-stats .stats-number {
+        font-size: 2rem;
+    }
+    
+    .upload-area {
+        padding: 1.5rem;
+    }
+    
+    .upload-icon {
+        font-size: 2rem;
+    }
+}
+
+/* Utilitários específicos do módulo de pedidos */
+.text-pedidos-primary {
+    color: var(--pedidos-primary) !important;
+}
+
+.text-pedidos-secondary {
+    color: var(--pedidos-secondary) !important;
+}
+
+.bg-pedidos-primary {
+    background-color: var(--pedidos-primary) !important;
+}
+
+.bg-pedidos-secondary {
+    background-color: var(--pedidos-secondary) !important;
+}
+
+.border-pedidos-primary {
+    border-color: var(--pedidos-primary) !important;
+}
+
+.shadow-pedidos {
+    box-shadow: 0 10px 30px rgba(79, 70, 229, 0.1) !important;
+}
+
+/* Estados de loading */
+.loading-pedidos {
+    position: relative;
+    pointer-events: none;
+}
+
+.loading-pedidos::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid transparent;
+    border-top: 2px solid var(--pedidos-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Tooltips personalizados */
+.tooltip-pedidos {
+    position: relative;
+    cursor: help;
+}
+
+.tooltip-pedidos::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--dark-color);
+    color: white;
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.tooltip-pedidos:hover::before {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-5px);
+}
+
+/* Notificações específicas */
+.notification-pedidos {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border-left: 4px solid var(--pedidos-primary);
+    z-index: 9999;
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.notification-pedidos.success {
+    border-left-color: var(--success-color);
+}
+
+.notification-pedidos.warning {
+    border-left-color: var(--warning-color);
+}
+
+.notification-pedidos.error {
+    border-left-color: var(--danger-color);
+}
+
+/* Badges customizados */
+.badge-pedidos {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-novo {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.badge-urgente {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.5; }
+}
+

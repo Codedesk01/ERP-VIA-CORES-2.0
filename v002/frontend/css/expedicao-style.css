@@ -1,0 +1,144 @@
+/* Custom Shipping Module Styles */
+
+:root {
+    --expedicao-primary: #3b82f6; /* Azul */
+    --expedicao-secondary: #2563eb;
+    --conferencia-bg: #f8fafc;
+    --step-pending-color: #9ca3af;
+    --step-active-color: var(--expedicao-primary );
+    --step-success-color: #10b981;
+    --step-error-color: #ef4444;
+}
+
+/* Estilos gerais do módulo */
+.sidebar-header, .modal-header {
+    background: linear-gradient(135deg, var(--expedicao-primary), var(--expedicao-secondary));
+}
+.sidebar-nav .nav-link.active {
+    background: linear-gradient(90deg, var(--expedicao-primary), var(--expedicao-secondary));
+}
+.sidebar-nav .nav-link:hover {
+    border-left-color: var(--expedicao-primary);
+}
+.stats-card::before {
+    background: linear-gradient(90deg, var(--expedicao-primary), var(--expedicao-secondary));
+}
+.stats-icon.bg-primary { background: linear-gradient(135deg, var(--expedicao-primary), var(--expedicao-secondary)); }
+.stats-icon.bg-success { background: linear-gradient(135deg, #10b981, #059669); }
+.stats-icon.bg-danger { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.stats-icon.bg-info { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
+
+/* Fila de Conferência */
+.fila-conferencia-container {
+    max-height: 75vh;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+.list-group-item {
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+.list-group-item:hover {
+    background-color: #eef2ff;
+    transform: translateX(5px);
+}
+.list-group-item.active {
+    background-color: var(--expedicao-primary);
+    border-color: var(--expedicao-primary);
+}
+.list-group-item .badge {
+    font-size: 0.7rem;
+}
+
+/* Estação de Conferência */
+#estacao-conferencia {
+    background-color: var(--conferencia-bg);
+    border-radius: 15px;
+    border: 1px solid #e2e8f0;
+}
+.conferencia-header {
+    text-align: center;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+.conferencia-header h4 {
+    font-weight: 700;
+    color: var(--expedicao-primary);
+}
+.conferencia-steps {
+    display: flex;
+    justify-content: space-around;
+    margin: 1.5rem 0;
+}
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--step-pending-color);
+    transition: color 0.3s ease;
+}
+.step-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 3px solid var(--step-pending-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+}
+.step.active .step-icon {
+    border-color: var(--step-active-color);
+    background-color: var(--step-active-color);
+    color: white;
+    transform: scale(1.1);
+}
+.step.success .step-icon {
+    border-color: var(--step-success-color);
+    background-color: var(--step-success-color);
+    color: white;
+}
+.step.error .step-icon {
+    border-color: var(--step-error-color);
+    background-color: var(--step-error-color);
+    color: white;
+    animation: shake 0.5s;
+}
+.step-label {
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+.step.active .step-label { color: var(--step-active-color); }
+.step.success .step-label { color: var(--step-success-color); }
+.step.error .step-label { color: var(--step-error-color); }
+
+.conferencia-input-group {
+    position: relative;
+}
+.conferencia-input-group .form-control {
+    height: 50px;
+    font-size: 1.2rem;
+    text-align: center;
+    border-radius: 10px;
+}
+.conferencia-input-group .btn {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    height: 40px;
+}
+.conferencia-feedback {
+    margin-top: 1rem;
+    font-weight: 600;
+    height: 24px;
+}
+.feedback-success { color: var(--step-success-color); }
+.feedback-error { color: var(--step-error-color); }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}

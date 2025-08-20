@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo de Estoque - Sistema Administrativo</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- DataTables CSS -->
+    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    
+    <!-- Animate.css -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom CSS -->
+    <link href="css/estoque-style.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h4 class="text-white mb-0">
+                <i class="fas fa-boxes me-2"></i>
+                Módulo Estoque
+            </h4>
+        </div>
+        
+        <ul class="nav flex-column sidebar-nav">
+            <li class="nav-item">
+                <a class="nav-link active" href="#dashboard" data-section="dashboard">
+                    <i class="fas fa-chart-pie me-2"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#itens" data-section="itens">
+                    <i class="fas fa-cube me-2"></i>
+                    Itens
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#movimentacoes" data-section="movimentacoes">
+                    <i class="fas fa-exchange-alt me-2"></i>
+                    Movimentações
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#relatorios" data-section="relatorios">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    Relatórios
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#pedidos" data-section="pedidos">
+                    <i class="fas fa-shopping-cart me-2"></i>
+                    Integração Pedidos
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#logs" data-section="logs">
+                    <i class="fas fa-clipboard-list me-2"></i>
+                    Logs do Sistema
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+            <div class="container-fluid">
+                <button class="btn btn-outline-secondary me-3" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <div class="navbar-nav ms-auto">
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                            <img src="https://via.placeholder.com/32x32/007bff/ffffff?text=E" class="rounded-circle me-2" alt="Estoque">
+                            <span>Gestor de Estoque</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Perfil</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Configurações</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="../admin.html"><i class="fas fa-arrow-left me-2"></i>Voltar ao Admin</a></li>
+                            <li><a class="dropdown-item" href="../login.html"><i class="fas fa-sign-out-alt me-2"></i>Sair</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="content-section active">
+            <div class="container-fluid">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="h3 mb-0">Dashboard do Estoque</h2>
+                    <div class="btn-group">
+                        <button class="btn btn-outline-primary btn-sm" data-period="today">Hoje</button>
+                        <button class="btn btn-outline-primary btn-sm active" data-period="week">Semana</button>
+                        <button class="btn btn-outline-primary btn-sm" data-period="month">Mês</button>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="row mb-4">
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card stats-card border-0 shadow-sm animate__animated animate__fadeInUp">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stats-icon bg-primary">
+                                        <i class="fas fa-boxes text-white"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <div class="text-muted small">Total de Itens</div>
+                                        <div class="h4 mb-0" id="total-items">1,247</div>
+                                        <div class="text-success small">
+                                            <i class="fas fa-arrow-up"></i> 12 novos esta semana
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card stats-card border-0 shadow-sm animate__animated animate__fadeInUp" style="animation-delay: 0.1s">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stats-icon bg-warning">
+                                        <i class="fas fa-exclamation-triangle text-white"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <div class="text-muted small">Estoque Baixo</div>
+                                        <div class="h4 mb-0" id="low-stock">23</div>
+                                        <div class="text-warning small">
+                                            <i class="fas fa-exclamation-circle"></i> Requer atenção
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card stats-card border-0 shadow-sm animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stats-icon bg-success">
+                                        <i class="fas fa-arrow-up text-white"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <div class="text-muted small">Entradas Hoje</div>
+                                        <div class="h4 mb-0" id="entries-today">156</div>
+                                        <div class="text-success small">
+                                            <i class="fas fa-arrow-up"></i> +8% vs ontem
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card stats-card border-0 shadow-sm animate__animated animate__fadeInUp" style="animation-delay: 0.3s">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stats-icon bg-danger">
+                                        <i class="fas fa-arrow-down text-white"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <div class="text-muted small">Saídas Hoje</div>
+                                        <div class="h4 mb-0" id="exits-today">89</div>
+                                        <div class="text-danger small">
+                                            <i class="fas fa-arrow-down"></i> -3% vs ontem
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="row mb-4">
+                    <div class="col-xl-8 mb-4">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-0">
+                                <h5 class="card-title mb-0">Movimentação de Estoque (Últimos 7 dias)</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="stockMovementChart" height="100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-4 mb-4">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-0">
+                                <h5 class="card-title mb-0">Categorias de Produtos</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="categoriesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-0">
+                                <h5 class="card-title mb-0">Atividade Recente do Estoque</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="activity-timeline" id="stock-activity">
+                                    <!-- Atividades serão carregadas via JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Itens Section -->
+        <div id="itens-section" class="content-section">
+            <div class="container-fluid">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="h3 mb-0">Gestão de Itens</h2>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary" id="importItemsBtn">
+                            <i class="fas fa-upload me-2"></i>Importar
+                        </button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#itemModal">
+                            <i class="fas fa-plus me-2"></i>Novo Item
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filtros -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Categoria</label>
+                                <select class="form-select" id="filterCategory">
+                                    <option value="">Todas as categorias</option>
+                                    <option value="tecidos">Tecidos</option>
+                                    <option value="aviamentos">Aviamentos</option>
+                                    <option value="ferramentas">Ferramentas</option>
+                                    <option value="acabamentos">Acabamentos</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Status</label>
+                                <select class="form-select" id="filterStatus">
+                                    <option value="">Todos os status</option>
+                                    <option value="disponivel">Disponível</option>
+                                    <option value="baixo">Estoque Baixo</option>
+                                    <option value="esgotado">Esgotado</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Localização</label>
+                                <select class="form-select" id="filterLocation">
+                                    <option value="">Todas as localizações</option>
+                                    <option value="A1">Prateleira A1</option>
+                                    <option value="A2">Prateleira A2</option>
+                                    <option value="B1">Prateleira B1</option>
+                                    <option value="B2">Prateleira B2</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Buscar</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="searchItems" placeholder="Nome ou código...">
+                                    <button class="btn btn-outline-secondary" type="button">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabela de Itens -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <table id="itemsTable" class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Nome</th>
+                                    <th>Categoria</th>
+                                    <th>Quantidade</th>
+                                    <th>Localização</th>
+                                    <th>Status</th>
+                                    <th>Última Movimentação</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dados serão carregados via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Movimentações Section -->
+        <div id="movimentacoes-section" class="content-section">
+            <div class="container-fluid">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="h3 mb-0">Movimentações de Estoque</h2>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#entradaModal">
+                            <i class="fas fa-arrow-up me-2"></i>Entrada
+                        </button>
+                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#saidaModal">
+                            <i class="fas fa-arrow-down me-2"></i>Saída
+                        </button>
+                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#ajusteModal">
+                            <i class="fas fa-edit me-2"></i>Ajuste
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filtros de Movimentação -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-2">
+                                <label class="form-label">Tipo</label>
+                                <select class="form-select" id="filterMovementType">
+                                    <option value="">Todos</option>
+                                    <option value="entrada">Entrada</option>
+                                    <option value="saida">Saída</option>
+                                    <option value="ajuste">Ajuste</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Data Inicial</label>
+                                <input type="date" class="form-control" id="filterDateStart">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Data Final</label>
+                                <input type="date" class="form-control" id="filterDateEnd">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Item</label>
+                                <input type="text" class="form-control" id="filterMovementItem" placeholder="Nome ou código do item...">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Usuário</label>
+                                <select class="form-select" id="filterUser">
+                                    <option value="">Todos</option>
+                                    <option value="admin">Administrador</option>
+                                    <option value="joao">João Silva</option>
+                                    <option value="maria">Maria Santos</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <label class="form-label">&nbsp;</label>
+                                <button class="btn btn-primary w-100" id="applyMovementFilters">
+                                    <i class="fas fa-filter"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabela de Movimentações -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <table id="movementsTable" class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Data/Hora</th>
+                                    <th>Tipo</th>
+                                    <th>Item</th>
+                                    <th>Quantidade</th>
+                                    <th>Motivo</th>
+                                    <th>Usuário</th>
+                                    <th>Observações</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dados serão carregados via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Relatórios Section -->
+        <div id="relatorios-section" class="content-section">
+            <div class="container-fluid">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="h3 mb-0">Relatórios de Estoque</h2>
+                    <button class="btn btn-primary" id="generateCustomReport">
+                        <i class="fas fa-chart-bar me-2"></i>Relatório Personalizado
+                    </button>
+                </div>
+
+                <!-- Relatórios Rápidos -->
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="card border-0 shadow-sm h-100 report-card" data-report="inventory">
+                            <div class="card-body text-center">
+                                <div class="report-icon mb-3">
+                                    <i class="fas fa-boxes fa-3x text-primary"></i>
+                                </div>
+                                <h5 class="card-title">Inventário Geral</h5>
+                                <p class="card-text text-muted">Relatório completo de todos os itens em estoque</p>
+                                <button class="btn btn-outline-primary">Gerar Relatório</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <div class="card border-0 shadow-sm h-100 report-card" data-report="movements">
+                            <div class="card-body text-center">
+                                <div class="report-icon mb-3">
+                                    <i class="fas fa-exchange-alt fa-3x text-success"></i>
+                                </div>
+                                <h5 class="card-title">Movimentações</h5>
+                                <p class="card-text text-muted">Histórico detalhado de todas as movimentações</p>
+                                <button class="btn btn-outline-success">Gerar Relatório</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <div class="card border-0 shadow-sm h-100 report-card" data-report="low-stock">
+                            <div class="card-body text-center">
+                                <div class="report-icon mb-3">
+                                    <i class="fas fa-exclamation-triangle fa-3x text-warning"></i>
+                                </div>
+                                <h5 class="card-title">Estoque Baixo</h5>
+                                <p class="card-text text-muted">Itens com estoque abaixo do mínimo</p>
+                                <button class="btn btn-outline-warning">Gerar Relatório</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <div class="card border-0 shadow-sm h-100 report-card" data-report="valuation">
+                            <div class="card-body text-center">
+                                <div class="report-icon mb-3">
+                                    <i class="fas fa-dollar-sign fa-3x text-info"></i>
+                                </div>
+                                <h5 class="card-title">Valorização</h5>
+                                <p class="card-text text-muted">Valor total do estoque por categoria</p>
+                                <button class="btn btn-outline-info">Gerar Relatório</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Área de Visualização de Relatórios -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white border-0">
+                        <h5 class="card-title mb-0">Visualização de Relatório</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="reportContent" class="text-center text-muted">
+                            <i class="fas fa-chart-bar fa-3x mb-3"></i>
+                            <p>Selecione um relatório acima para visualizar os dados</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Integração Pedidos Section -->
+        <div id="pedidos-section" class="content-section">
+            <div class="container-fluid">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="h3 mb-0">Integração com Pedidos</h2>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary" id="syncOrdersBtn">
+                            <i class="fas fa-sync me-2"></i>Sincronizar Pedidos
+                        </button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#orderModal">
+                            <i class="fas fa-plus me-2"></i>Novo Pedido
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Status de Integração -->
+                <div class="row mb-4">
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stats-icon bg-success me-3">
+                                        <i class="fas fa-check text-white"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-muted small">Pedidos Processados</div>
+                                        <div class="h4 mb-0" id="processed-orders">45</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stats-icon bg-warning me-3">
+                                        <i class="fas fa-clock text-white"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-muted small">Pedidos Pendentes</div>
+                                        <div class="h4 mb-0" id="pending-orders">12</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stats-icon bg-danger me-3">
+                                        <i class="fas fa-times text-white"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-muted small">Sem Estoque</div>
+                                        <div class="h4 mb-0" id="no-stock-orders">3</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabela de Pedidos -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <table id="ordersTable" class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Pedido</th>
+                                    <th>Cliente</th>
+                                    <th>Itens</th>
+                                    <th>Status Estoque</th>
+                                    <th>Data Pedido</th>
+                                    <th>Baixa Automática</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dados serão carregados via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logs Section -->
+        <div id="logs-section" class="content-section">
+            <div class="container-fluid">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="h3 mb-0">Logs do Sistema de Estoque</h2>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-danger" id="clearLogsBtn">
+                            <i class="fas fa-trash me-2"></i>Limpar Logs
+                        </button>
+                        <button class="btn btn-outline-primary" id="exportLogsBtn">
+                            <i class="fas fa-download me-2"></i>Exportar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filtros de Logs -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-2">
+                                <label class="form-label">Nível</label>
+                                <select class="form-select" id="filterLogLevel">
+                                    <option value="">Todos</option>
+                                    <option value="info">Info</option>
+                                    <option value="warning">Warning</option>
+                                    <option value="error">Error</option>
+                                    <option value="success">Success</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Ação</label>
+                                <select class="form-select" id="filterLogAction">
+                                    <option value="">Todas</option>
+                                    <option value="cadastro">Cadastro</option>
+                                    <option value="movimentacao">Movimentação</option>
+                                    <option value="baixa">Baixa</option>
+                                    <option value="ajuste">Ajuste</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Usuário</label>
+                                <select class="form-select" id="filterLogUser">
+                                    <option value="">Todos</option>
+                                    <option value="admin">Administrador</option>
+                                    <option value="joao">João Silva</option>
+                                    <option value="maria">Maria Santos</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Data Inicial</label>
+                                <input type="date" class="form-control" id="filterLogDateStart">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Data Final</label>
+                                <input type="date" class="form-control" id="filterLogDateEnd">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">&nbsp;</label>
+                                <button class="btn btn-primary w-100" id="applyLogFilters">
+                                    <i class="fas fa-filter"></i> Filtrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabela de Logs -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <table id="logsTable" class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Data/Hora</th>
+                                    <th>Nível</th>
+                                    <th>Usuário</th>
+                                    <th>Ação</th>
+                                    <th>Módulo</th>
+                                    <th>Descrição</th>
+                                    <th>IP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dados serão carregados via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Novo Item -->
+    <div class="modal fade" id="itemModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-cube me-2"></i>
+                        <span id="itemModalTitle">Novo Item</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="itemForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Código do Item *</label>
+                                <input type="text" class="form-control" id="itemCode" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Nome do Item *</label>
+                                <input type="text" class="form-control" id="itemName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Categoria *</label>
+                                <select class="form-select" id="itemCategory" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="tecidos">Tecidos</option>
+                                    <option value="aviamentos">Aviamentos</option>
+                                    <option value="ferramentas">Ferramentas</option>
+                                    <option value="acabamentos">Acabamentos</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Unidade de Medida *</label>
+                                <select class="form-select" id="itemUnit" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="un">Unidade</option>
+                                    <option value="m">Metro</option>
+                                    <option value="kg">Quilograma</option>
+                                    <option value="l">Litro</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Quantidade Inicial</label>
+                                <input type="number" class="form-control" id="itemQuantity" min="0" step="0.01">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Estoque Mínimo</label>
+                                <input type="number" class="form-control" id="itemMinStock" min="0" step="0.01">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Valor Unitário</label>
+                                <input type="number" class="form-control" id="itemPrice" min="0" step="0.01">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Prateleira *</label>
+                                <select class="form-select" id="itemShelf" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="A1">Prateleira A1</option>
+                                    <option value="A2">Prateleira A2</option>
+                                    <option value="B1">Prateleira B1</option>
+                                    <option value="B2">Prateleira B2</option>
+                                    <option value="C1">Prateleira C1</option>
+                                    <option value="C2">Prateleira C2</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Posição</label>
+                                <input type="text" class="form-control" id="itemPosition" placeholder="Ex: 001, 002...">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Descrição</label>
+                                <textarea class="form-control" id="itemDescription" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveItemBtn">
+                        <i class="fas fa-save me-2"></i>Salvar Item
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Entrada -->
+    <div class="modal fade" id="entradaModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-arrow-up me-2"></i>
+                        Entrada de Estoque
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="entradaForm">
+                        <div class="mb-3">
+                            <label class="form-label">Item *</label>
+                            <select class="form-select" id="entradaItem" required>
+                                <option value="">Selecione o item...</option>
+                                <!-- Opções serão carregadas via JavaScript -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Quantidade *</label>
+                            <input type="number" class="form-control" id="entradaQuantity" min="0.01" step="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Motivo *</label>
+                            <select class="form-select" id="entradaMotivo" required>
+                                <option value="">Selecione...</option>
+                                <option value="compra">Compra</option>
+                                <option value="devolucao">Devolução</option>
+                                <option value="transferencia">Transferência</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Observações</label>
+                            <textarea class="form-control" id="entradaObservacoes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" id="saveEntradaBtn">
+                        <i class="fas fa-save me-2"></i>Registrar Entrada
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Saída -->
+    <div class="modal fade" id="saidaModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-arrow-down me-2"></i>
+                        Saída de Estoque
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="saidaForm">
+                        <div class="mb-3">
+                            <label class="form-label">Item *</label>
+                            <select class="form-select" id="saidaItem" required>
+                                <option value="">Selecione o item...</option>
+                                <!-- Opções serão carregadas via JavaScript -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Quantidade *</label>
+                            <input type="number" class="form-control" id="saidaQuantity" min="0.01" step="0.01" required>
+                            <div class="form-text">Quantidade disponível: <span id="availableQuantity">0</span></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Motivo *</label>
+                            <select class="form-select" id="saidaMotivo" required>
+                                <option value="">Selecione...</option>
+                                <option value="venda">Venda</option>
+                                <option value="producao">Produção</option>
+                                <option value="devolucao">Devolução</option>
+                                <option value="perda">Perda</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Observações</label>
+                            <textarea class="form-control" id="saidaObservacoes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="saveSaidaBtn">
+                        <i class="fas fa-save me-2"></i>Registrar Saída
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ajuste -->
+    <div class="modal fade" id="ajusteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title">
+                        <i class="fas fa-edit me-2"></i>
+                        Ajuste de Estoque
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="ajusteForm">
+                        <div class="mb-3">
+                            <label class="form-label">Item *</label>
+                            <select class="form-select" id="ajusteItem" required>
+                                <option value="">Selecione o item...</option>
+                                <!-- Opções serão carregadas via JavaScript -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Quantidade Atual</label>
+                            <input type="number" class="form-control" id="currentQuantity" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nova Quantidade *</label>
+                            <input type="number" class="form-control" id="newQuantity" min="0" step="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Motivo do Ajuste *</label>
+                            <select class="form-select" id="ajusteMotivo" required>
+                                <option value="">Selecione...</option>
+                                <option value="inventario">Inventário</option>
+                                <option value="correcao">Correção</option>
+                                <option value="perda">Perda</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Observações *</label>
+                            <textarea class="form-control" id="ajusteObservacoes" rows="3" required placeholder="Descreva o motivo do ajuste..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning" id="saveAjusteBtn">
+                        <i class="fas fa-save me-2"></i>Registrar Ajuste
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="js/estoque-script.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo de Produção - Sistema Administrativo</title>
+    
+    <!-- Dependências CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    
+    <!-- Estilos Personalizados -->
+    <link href="css/admin-style.css" rel="stylesheet">
+    <link href="css/producao-style.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h4 class="text-white mb-0">
+                <i class="fas fa-cogs me-2"></i>
+                Produção
+            </h4>
+        </div>
+        
+        <ul class="nav flex-column sidebar-nav">
+            <li class="nav-item"><a class="nav-link active" href="#dashboard" data-section="dashboard"><i class="fas fa-chart-pie me-2"></i>Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="#fila" data-section="fila"><i class="fas fa-stream me-2"></i>Fila de Pedidos</a></li>
+            <li class="nav-item"><a class="nav-link" href="#historico" data-section="historico"><i class="fas fa-history me-2"></i>Histórico</a></li>
+            <li class="nav-item"><a class="nav-link" href="#usuarios" data-section="usuarios"><i class="fas fa-users-cog me-2"></i>Usuários</a></li>
+            <li class="nav-item"><a class="nav-link" href="#relatorios" data-section="relatorios"><i class="fas fa-chart-bar me-2"></i>Relatórios</a></li>
+            <li class="nav-item"><a class="nav-link" href="#logs" data-section="logs"><i class="fas fa-clipboard-list me-2"></i>Logs</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+            <div class="container-fluid">
+                <button class="btn btn-outline-secondary me-3" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+                <div class="navbar-nav ms-auto">
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                            <img src="https://via.placeholder.com/32x32/10b981/ffffff?text=P" class="rounded-circle me-2" alt="Produção">
+                            <span>Gestor de Produção</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Perfil</a></li>
+                            <li><a class="dropdown-item" href="../admin.html"><i class="fas fa-arrow-left me-2"></i>Voltar ao Admin</a></li>
+                            <li><a class="dropdown-item" href="../login.html"><i class="fas fa-sign-out-alt me-2"></i>Sair</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="content-section active">
+            <div class="container-fluid">
+                <h2 class="h3 mb-4">Dashboard de Produção</h2>
+                <div class="row mb-4">
+                    <!-- Métricas -->
+                    <div class="col-xl-3 col-md-6 mb-4"><div class="card stats-card h-100"><div class="card-body"><div class="d-flex align-items-center"><div class="stats-icon bg-primary"><i class="fas fa-stream text-white"></i></div><div class="ms-3"><div class="text-muted small">Pedidos na Fila</div><div class="h4 mb-0" id="metric-fila">0</div></div></div></div></div></div>
+                    <div class="col-xl-3 col-md-6 mb-4"><div class="card stats-card h-100"><div class="card-body"><div class="d-flex align-items-center"><div class="stats-icon bg-success"><i class="fas fa-check-circle text-white"></i></div><div class="ms-3"><div class="text-muted small">Concluídos Hoje</div><div class="h4 mb-0" id="metric-concluidos">0</div></div></div></div></div></div>
+                    <div class="col-xl-3 col-md-6 mb-4"><div class="card stats-card h-100"><div class="card-body"><div class="d-flex align-items-center"><div class="stats-icon bg-warning"><i class="fas fa-exclamation-triangle text-white"></i></div><div class="ms-3"><div class="text-muted small">Pendências</div><div class="h4 mb-0" id="metric-pendencias">0</div></div></div></div></div></div>
+                    <div class="col-xl-3 col-md-6 mb-4"><div class="card stats-card h-100"><div class="card-body"><div class="d-flex align-items-center"><div class="stats-icon bg-info"><i class="fas fa-users text-white"></i></div><div class="ms-3"><div class="text-muted small">Produtividade Média</div><div class="h4 mb-0" id="metric-produtividade">0%</div></div></div></div></div></div>
+                </div>
+                <div class="row">
+                    <!-- Gráficos -->
+                    <div class="col-xl-7 mb-4"><div class="card border-0 shadow-sm"><div class="card-header"><h5 class="card-title mb-0">Progresso da Produção (Últimos 7 dias )</h5></div><div class="card-body"><canvas id="progressoChart" height="150"></canvas></div></div></div>
+                    <div class="col-xl-5 mb-4"><div class="card border-0 shadow-sm"><div class="card-header"><h5 class="card-title mb-0">Produção por Etapa</h5></div><div class="card-body"><canvas id="etapasChart" height="150"></canvas></div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fila de Pedidos Section -->
+        <div id="fila-section" class="content-section">
+            <div class="container-fluid">
+                <h2 class="h3 mb-4">Fila de Produção</h2>
+                <div class="kanban-board">
+                    <!-- Colunas do Kanban serão preenchidas via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Histórico Section -->
+        <div id="historico-section" class="content-section">
+            <div class="container-fluid">
+                <h2 class="h3 mb-4">Histórico de Progresso</h2>
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <!-- Filtros do Histórico -->
+                        <div class="row g-3">
+                            <div class="col-md-3"><input type="text" class="form-control" id="hist-search" placeholder="Buscar por Pedido ou SKU..."></div>
+                            <div class="col-md-3"><select class="form-select" id="hist-user-filter"><option value="">Todos os Usuários</option></select></div>
+                            <div class="col-md-2"><select class="form-select" id="hist-etapa-filter"><option value="">Todas as Etapas</option></select></div>
+                            <div class="col-md-2"><input type="date" class="form-control" id="hist-date-filter"></div>
+                            <div class="col-md-2"><button class="btn btn-outline-secondary w-100" id="hist-apply-filters"><i class="fas fa-filter me-2"></i>Filtrar</button></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <table id="historicoTable" class="table table-hover">
+                            <thead><tr><th>Data/Hora</th><th>Pedido</th><th>SKU</th><th>Etapa</th><th>Status</th><th>Usuário</th><th>Detalhes</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usuários Section -->
+        <div id="usuarios-section" class="content-section">
+            <div class="container-fluid">
+                <h2 class="h3 mb-4">Gestão de Usuários da Produção</h2>
+                <div class="row" id="user-cards-container">
+                    <!-- Cards de usuário serão preenchidos via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Relatórios Section -->
+        <div id="relatorios-section" class="content-section">
+            <div class="container-fluid">
+                <h2 class="h3 mb-4">Relatórios (Visão do Admin)</h2>
+                <div class="alert alert-primary"><i class="fas fa-user-shield me-2"></i>Esta seção exibe relatórios detalhados, normalmente restritos a administradores.</div>
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Relatório de Upload de Artes</h5>
+                    </div>
+                    <div class="card-body">
+                        <table id="relatoriosTable" class="table table-hover">
+                            <thead><tr><th>Data</th><th>Arte</th><th>Pedido</th><th>Usuário</th><th>Impressora</th><th>Status</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logs Section -->
+        <div id="logs-section" class="content-section">
+            <div class="container-fluid">
+                <h2 class="h3 mb-4">Logs de Usuários</h2>
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="alert alert-warning"><i class="fas fa-exclamation-triangle me-2"></i>Acesso restrito a administradores.</div>
+                        <table id="logsTable" class="table table-hover">
+                            <thead><tr><th>Data/Hora</th><th>Usuário</th><th>Ação</th><th>Detalhes</th><th>IP</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Detalhes do Pedido -->
+    <div class="modal fade" id="pedidoModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pedidoModalTitle"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="pedidoModalBody"></div>
+                    <hr>
+                    <div class="mt-3">
+                        <h6>Checklist de Produção</h6>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="check-estoque">
+                            <label class="form-check-label" for="check-estoque">Estoque de material verificado</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="check-arte">
+                            <label class="form-check-label" for="check-arte">Arte final aprovada</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="cancelarPedidoBtn"><i class="fas fa-times me-2"></i>Cancelar Pedido</button>
+                    <button type="button" class="btn btn-success" id="avancarPedidoBtn"><i class="fas fa-arrow-right me-2"></i>Avançar para Costura</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Permissões do Usuário -->
+    <div class="modal fade" id="userModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userModalTitle"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="userModalBody">
+                    <!-- Conteúdo das permissões carregado via JS -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary" id="saveUserPermissionsBtn">Salvar Permissões</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="js/producao-script.js"></script>
+</body>
+</html>

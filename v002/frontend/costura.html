@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo de Costura - Sistema Administrativo</title>
+    
+    <!-- Dependências CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    
+    <!-- Estilos Personalizados -->
+    <link href="css/admin-style.css" rel="stylesheet">
+    <link href="css/costura-style.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h4 class="text-white mb-0"><i class="fas fa-cut me-2"></i>Costura</h4>
+        </div>
+        <ul class="nav flex-column sidebar-nav">
+            <li class="nav-item"><a class="nav-link active" href="#dashboard" data-section="dashboard"><i class="fas fa-chart-pie me-2"></i>Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="#fila" data-section="fila"><i class="fas fa-tasks me-2"></i>Fila de Costura</a></li>
+            <li class="nav-item"><a class="nav-link" href="#controle" data-section="controle"><i class="fas fa-user-cog me-2"></i>Controle de Usuários</a></li>
+            <li class="nav-item"><a class="nav-link" href="#relatorios" data-section="relatorios"><i class="fas fa-chart-bar me-2"></i>Relatórios</a></li>
+            <li class="nav-item"><a class="nav-link" href="#logs" data-section="logs"><i class="fas fa-clipboard-list me-2"></i>Logs de Usuários</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+            <div class="container-fluid">
+                <button class="btn btn-outline-secondary me-3" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+                <div class="navbar-nav ms-auto">
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                            <img src="https://via.placeholder.com/32x32/f97316/ffffff?text=C" class="rounded-circle me-2" alt="Costura">
+                            <span>Costureira Chefe</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Perfil</a></li>
+                            <li><a class="dropdown-item" href="../admin.html"><i class="fas fa-arrow-left me-2"></i>Voltar ao Admin</a></li>
+                            <li><a class="dropdown-item" href="../login.html"><i class="fas fa-sign-out-alt me-2"></i>Sair</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="content-section active">
+            <div class="container-fluid">
+                <h2 class="h3 mb-4">Dashboard de Costura</h2>
+                <div class="row mb-4">
+                    <!-- Métricas -->
+                    <div class="col-xl-3 col-md-6 mb-4"><div class="card stats-card h-100"><div class="card-body"><div class="d-flex align-items-center"><div class="stats-icon bg-primary"><i class="fas fa-tshirt text-white"></i></div><div class="ms-3"><div class="text-muted small">Itens na Fila</div><div class="h4 mb-0" id="metric-fila">0</div></div></div></div></div></div>
+                    <div class="col-xl-3 col-md-6 mb-4"><div class="card stats-card h-100"><div class="card-body"><div class="d-flex align-items-center"><div class="stats-icon bg-success"><i class="fas fa-check-double text-white"></i></div><div class="ms-3"><div class="text-muted small">Checks Hoje</div><div class="h4 mb-0" id="metric-checks">0</div></div></div></div></div></div>
+                    <div class="col-xl-3 col-md-6 mb-4"><div class="card stats-card h-100"><div class="card-body"><div class="d-flex align-items-center"><div class="stats-icon bg-info"><i class="fas fa-users text-white"></i></div><div class="ms-3"><div class="text-muted small">Costureiras Ativas</div><div class="h4 mb-0" id="metric-usuarios">0</div></div></div></div></div></div>
+                    <div class="col-xl-3 col-md-6 mb-4"><div class="card stats-card h-100"><div class="card-body"><div class="d-flex align-items-center"><div class="stats-icon bg-secondary"><i class="fas fa-chart-line text-white"></i></div><div class="ms-3"><div class="text-muted small">Eficiência Média</div><div class="h4 mb-0" id="metric-eficiencia">0%</div></div></div></div></div></div>
+                </div>
+                <div class="row">
+                    <!-- Gráficos -->
+                    <div class="col-xl-7 mb-4"><div class="card border-0 shadow-sm"><div class="card-header"><h5 class="card-title mb-0">Checks por Usuário (Hoje )</h5></div><div class="card-body"><canvas id="checksUsuarioChart" height="150"></canvas></div></div></div>
+                    <div class="col-xl-5 mb-4"><div class="card border-0 shadow-sm"><div class="card-header"><h5 class="card-title mb-0">Produção por Tipo de Peça</h5></div><div class="card-body"><canvas id="tipoPecaChart" height="150"></canvas></div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fila de Costura Section -->
+        <div id="fila-section" class="content-section">
+            <div class="container-fluid">
+                <h2 class="h3 mb-4">Fila de Costura</h2>
+                <div class="row" id="costura-fila-container">
+                    <!-- Cards de costura serão preenchidos via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Controle de Usuários Section (Admin) -->
+        <div id="controle-section" class="content-section">
+            <div class="container-fluid">
+                <h2 class="h3 mb-4">Controle de Visibilidade por Usuário</h2>
+                <div class="alert alert-primary"><i class="fas fa-user-shield me-2"></i>Área de configuração do Administrador.</div>
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="row" id="user-control-container">
+                            <!-- Controles de usuário serão preenchidos via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Relatórios Section (Admin) -->
+        <div id="relatorios-section" class="content-section">
+            <div class="container-fluid">
+                <h2 class="h3 mb-4">Relatórios de Eficiência</h2>
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <!-- Filtros -->
+                        <div class="row g-3">
+                            <div class="col-md-4"><select class="form-select" id="rel-user-filter"><option value="">Todos os Usuários</option></select></div>
+                            <div class="col-md-4"><input type="date" class="form-control" id="rel-date-start"></div>
+                            <div class="col-md-4"><input type="date" class="form-control" id="rel-date-end"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <table id="relatoriosTable" class="table table-hover">
+                            <thead><tr><th>Data</th><th>Usuário</th><th>Pedido</th><th>SKU</th><th>Etapa Concluída</th><th>Tempo Gasto</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logs de Usuários Section (Admin) -->
+        <div id="logs-section" class="content-section">
+            <div class="container-fluid">
+                <h2 class="h3 mb-4">Logs de Usuários da Costura</h2>
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="alert alert-warning"><i class="fas fa-exclamation-triangle me-2"></i>Acesso restrito a administradores.</div>
+                        <table id="logsTable" class="table table-hover">
+                            <thead><tr><th>Data/Hora</th><th>Usuário</th><th>Ação</th><th>Detalhes</th><th>IP</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Checklist -->
+    <div class="modal fade" id="checklistModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="checklistModalTitle"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Marque as etapas concluídas para este item.</p>
+                    <div id="checklist-container">
+                        <!-- Checklist será preenchido via JS -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" id="saveChecklistBtn"><i class="fas fa-check me-2"></i>Confirmar Checks</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/costura-script.js"></script>
+</body>
+</html>

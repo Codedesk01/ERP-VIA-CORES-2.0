@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo de Pedidos - Sistema Administrativo</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="css/estoque-style.css">
+    <link rel="stylesheet" href="css/pedidos-style.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-shopping-cart text-white me-2 fs-4"></i>
+                <h4 class="text-white mb-0">Módulo Pedidos</h4>
+            </div>
+        </div>
+        
+        <ul class="sidebar-nav nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="#" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt me-2"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="pedidos">
+                    <i class="fas fa-list-alt me-2"></i>
+                    <span>Pedidos</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="marketplaces">
+                    <i class="fas fa-store me-2"></i>
+                    <span>Marketplaces</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="impressoras">
+                    <i class="fas fa-print me-2"></i>
+                    <span>Impressoras</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="relatorios">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    <span>Relatórios</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="historico">
+                    <i class="fas fa-history me-2"></i>
+                    <span>Histórico</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="logs">
+                    <i class="fas fa-file-alt me-2"></i>
+                    <span>Logs</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="d-flex justify-content-between align-items-center p-3 bg-white shadow-sm">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-outline-secondary me-3" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h5 class="mb-0">Sistema de Gestão de Pedidos</h5>
+            </div>
+            
+            <div class="d-flex align-items-center">
+                <div class="dropdown me-3">
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-sync-alt me-1"></i>
+                        Sincronizar
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="sincronizarMarketplace('shopee')">
+                            <i class="fab fa-shopify me-2"></i>Shopee
+                        </a></li>
+                        <li><a class="dropdown-item" href="#" onclick="sincronizarMarketplace('mercadolivre')">
+                            <i class="fas fa-shopping-bag me-2"></i>Mercado Livre
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" onclick="sincronizarTodos()">
+                            <i class="fas fa-sync me-2"></i>Sincronizar Todos
+                        </a></li>
+                    </ul>
+                </div>
+                
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user me-1"></i>
+                        Gestor de Pedidos
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="estoque.html">
+                            <i class="fas fa-boxes me-2"></i>Módulo Estoque
+                        </a></li>
+                        <li><a class="dropdown-item" href="admin.html">
+                            <i class="fas fa-cog me-2"></i>Painel Admin
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="login.html">
+                            <i class="fas fa-sign-out-alt me-2"></i>Sair
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard-section" class="content-section active p-4">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2 class="mb-3">Dashboard de Pedidos</h2>
+                    
+                    <!-- Filtros de período -->
+                    <div class="btn-group mb-4" role="group">
+                        <button type="button" class="btn btn-outline-primary active" data-period="hoje">Hoje</button>
+                        <button type="button" class="btn btn-outline-primary" data-period="semana">Semana</button>
+                        <button type="button" class="btn btn-outline-primary" data-period="mes">Mês</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cards de Estatísticas -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="card stats-card h-100">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="stats-icon bg-primary me-3">
+                                <i class="fas fa-shopping-cart text-white"></i>
+                            </div>
+                            <div>
+                                <div class="stats-number" id="total-pedidos">0</div>
+                                <div class="stats-label text-muted">Pedidos Hoje</div>
+                                <div class="stats-change text-success">
+                                    <i class="fas fa-arrow-up"></i> +15% vs ontem
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="card stats-card h-100">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="stats-icon bg-warning me-3">
+                                <i class="fas fa-clock text-white"></i>
+                            </div>
+                            <div>
+                                <div class="stats-number" id="pedidos-pendentes">0</div>
+                                <div class="stats-label text-muted">Pendentes</div>
+                                <div class="stats-change text-warning">
+                                    <i class="fas fa-exclamation-triangle"></i> Requer atenção
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="card stats-card h-100">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="stats-icon bg-success me-3">
+                                <i class="fas fa-cogs text-white"></i>
+                            </div>
+                            <div>
+                                <div class="stats-number" id="pedidos-producao">0</div>
+                                <div class="stats-label text-muted">Em Produção</div>
+                                <div class="stats-change text-success">
+                                    <i class="fas fa-arrow-up"></i> +8% vs ontem
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="card stats-card h-100">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="stats-icon bg-info me-3">
+                                <i class="fas fa-dollar-sign text-white"></i>
+                            </div>
+                            <div>
+                                <div class="stats-number" id="valor-total">R$ 0,00</div>
+                                <div class="stats-label text-muted">Valor Total</div>
+                                <div class="stats-change text-success">
+                                    <i class="fas fa-arrow-up"></i> +22% vs ontem
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Gráficos e Atividades -->
+            <div class="row">
+                <div class="col-lg-8 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="fas fa-chart-line me-2"></i>
+                                Pedidos por Status (Últimos 7 dias)
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="pedidosStatusChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="fas fa-store me-2"></i>
+                                Pedidos por Marketplace
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="marketplaceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Atividade Recente -->
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="fas fa-clock me-2"></i>
+                                Atividade Recente
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="activity-timeline" id="recent-activity">
+                                <!-- Atividades serão carregadas via JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="fas fa-print me-2"></i>
+                                Status das Impressoras
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div id="impressoras-status">
+                                <!-- Status das impressoras será carregado via JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Pedidos -->
+        <section id="pedidos-section" class="content-section p-4">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2>Gestão de Pedidos</h2>
+                        <div>
+                            <button class="btn btn-success me-2" onclick="importarPedidos()">
+                                <i class="fas fa-download me-1"></i>
+                                Importar Pedidos
+                            </button>
+                            <button class="btn btn-primary" onclick="novoPedido()">
+                                <i class="fas fa-plus me-1"></i>
+                                Novo Pedido
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filtros -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="form-label">Marketplace</label>
+                            <select class="form-select" id="filterMarketplace">
+                                <option value="">Todos</option>
+                                <option value="shopee">Shopee</option>
+                                <option value="mercadolivre">Mercado Livre</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" id="filterStatus">
+                                <option value="">Todos</option>
+                                <option value="pendente">Pendente</option>
+                                <option value="aguardando_arte">Aguardando Arte</option>
+                                <option value="producao">Produção</option>
+                                <option value="costura">Costura</option>
+                                <option value="expedicao">Expedição</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Estoque</label>
+                            <select class="form-select" id="filterEstoque">
+                                <option value="">Todos</option>
+                                <option value="true">Com Estoque</option>
+                                <option value="false">Sem Estoque</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Buscar</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="searchPedidos" placeholder="SKU ou cliente...">
+                                <button class="btn btn-outline-secondary" type="button" onclick="filtrarPedidos()">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tabela de Pedidos -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="pedidosTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Marketplace</th>
+                                    <th>SKU</th>
+                                    <th>Cliente</th>
+                                    <th>Produto</th>
+                                    <th>Qtd</th>
+                                    <th>Valor</th>
+                                    <th>Status</th>
+                                    <th>Estoque</th>
+                                    <th>Data</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dados serão carregados via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Marketplaces -->
+        <section id="marketplaces-section" class="content-section p-4">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2 class="mb-3">Integração com Marketplaces</h2>
+                </div>
+            </div>
+            
+            <!-- Cards dos Marketplaces -->
+            <div class="row mb-4">
+                <div class="col-lg-6 mb-4">
+                    <div class="card marketplace-card shopee-card">
+                        <div class="card-header bg-shopee text-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fab fa-shopify me-2 fs-4"></i>
+                                    <strong>Shopee</strong>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="shopeeActive" checked>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <div class="fs-3 fw-bold text-shopee" id="shopee-pedidos">0</div>
+                                        <div class="text-muted">Pedidos Importados</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <div class="fs-6 text-muted" id="shopee-sync">Última Sync</div>
+                                        <div class="text-muted">16:00</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-shopee" onclick="configurarMarketplace('shopee')">
+                                    <i class="fas fa-cog me-1"></i>
+                                    Configurar
+                                </button>
+                                <button class="btn btn-outline-shopee" onclick="sincronizarMarketplace('shopee')">
+                                    <i class="fas fa-sync me-1"></i>
+                                    Sincronizar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 mb-4">
+                    <div class="card marketplace-card ml-card">
+                        <div class="card-header bg-ml text-dark">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-shopping-bag me-2 fs-4"></i>
+                                    <strong>Mercado Livre</strong>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="mlActive" checked>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <div class="fs-3 fw-bold text-ml" id="ml-pedidos">0</div>
+                                        <div class="text-muted">Pedidos Importados</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <div class="fs-6 text-muted" id="ml-sync">Última Sync</div>
+                                        <div class="text-muted">16:05</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-ml" onclick="configurarMarketplace('mercadolivre')">
+                                    <i class="fas fa-cog me-1"></i>
+                                    Configurar
+                                </button>
+                                <button class="btn btn-outline-ml" onclick="sincronizarMarketplace('mercadolivre')">
+                                    <i class="fas fa-sync me-1"></i>
+                                    Sincronizar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pedidos dos Marketplaces com boxes arredondadas -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="fas fa-boxes me-2"></i>
+                                Pedidos dos Marketplaces
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row" id="marketplace-pedidos">
+                                <!-- Boxes dos pedidos serão carregadas via JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Impressoras -->
+        <section id="impressoras-section" class="content-section p-4">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2>Controle de Impressoras</h2>
+                        <button class="btn btn-primary" onclick="adicionarImpressora()">
+                            <i class="fas fa-plus me-1"></i>
+                            Nova Impressora
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cards das Impressoras -->
+            <div class="row" id="impressoras-cards">
+                <!-- Cards das impressoras serão carregados via JavaScript -->
+            </div>
+            
+            <!-- Fila de Impressão -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="fas fa-list me-2"></i>
+                                Fila de Impressão
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="filaImpressaoTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Posição</th>
+                                            <th>Pedido</th>
+                                            <th>SKU</th>
+                                            <th>Arte</th>
+                                            <th>Impressora</th>
+                                            <th>Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Dados serão carregados via JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Relatórios -->
+        <section id="relatorios-section" class="content-section p-4">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2 class="mb-3">Relatórios de Pedidos</h2>
+                </div>
+            </div>
+            
+            <!-- Cards de Relatórios -->
+            <div class="row mb-4">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card report-card" data-report="pedidos">
+                        <div class="card-body text-center">
+                            <div class="report-icon text-primary mb-3">
+                                <i class="fas fa-shopping-cart fa-3x"></i>
+                            </div>
+                            <h6>Relatório de Pedidos</h6>
+                            <p class="text-muted small">Relatório completo de todos os pedidos</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card report-card" data-report="artes">
+                        <div class="card-body text-center">
+                            <div class="report-icon text-success mb-3">
+                                <i class="fas fa-palette fa-3x"></i>
+                            </div>
+                            <h6>Upload de Artes</h6>
+                            <p class="text-muted small">Detalhado de cada upload das artes</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card report-card" data-report="impressao">
+                        <div class="card-body text-center">
+                            <div class="report-icon text-warning mb-3">
+                                <i class="fas fa-print fa-3x"></i>
+                            </div>
+                            <h6>Relatório de Impressão</h6>
+                            <p class="text-muted small">Controle de impressoras e filas</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card report-card" data-report="producao">
+                        <div class="card-body text-center">
+                            <div class="report-icon text-info mb-3">
+                                <i class="fas fa-cogs fa-3x"></i>
+                            </div>
+                            <h6>Relatório de Produção</h6>
+                            <p class="text-muted small">Status de produção e expedição</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Área de Visualização de Relatórios -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-chart-bar me-2"></i>
+                                    Visualização de Relatório
+                                </h6>
+                                <button class="btn btn-success btn-sm" id="exportarRelatorio" style="display: none;">
+                                    <i class="fas fa-download me-1"></i>
+                                    Exportar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="reportContent">
+                                <div class="text-center text-muted py-5">
+                                    <i class="fas fa-chart-bar fa-3x mb-3"></i>
+                                    <p>Selecione um relatório acima para visualizar os dados</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Histórico -->
+        <section id="historico-section" class="content-section p-4">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2>Histórico de Transações</h2>
+                        <button class="btn btn-success" onclick="exportarHistorico()">
+                            <i class="fas fa-download me-1"></i>
+                            Exportar Histórico
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filtros do Histórico -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="form-label">Data Inicial</label>
+                            <input type="date" class="form-control" id="filterHistoricoDataInicio">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Data Final</label>
+                            <input type="date" class="form-control" id="filterHistoricoDataFim">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Ação</label>
+                            <select class="form-select" id="filterHistoricoAcao">
+                                <option value="">Todas</option>
+                                <option value="novo_pedido">Novo Pedido</option>
+                                <option value="upload_arte">Upload Arte</option>
+                                <option value="baixa_estoque">Baixa Estoque</option>
+                                <option value="mudanca_status">Mudança Status</option>
+                                <option value="impressao">Impressão</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">&nbsp;</label>
+                            <button class="btn btn-primary d-block w-100" onclick="filtrarHistorico()">
+                                <i class="fas fa-filter me-1"></i>
+                                Filtrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tabela de Histórico -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="historicoTable">
+                            <thead>
+                                <tr>
+                                    <th>Data/Hora</th>
+                                    <th>Pedido</th>
+                                    <th>Ação</th>
+                                    <th>Usuário</th>
+                                    <th>Detalhes</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dados serão carregados via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Logs -->
+        <section id="logs-section" class="content-section p-4">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2>Logs do Sistema</h2>
+                        <div>
+                            <button class="btn btn-success me-2" onclick="exportarLogs()">
+                                <i class="fas fa-download me-1"></i>
+                                Exportar Logs
+                            </button>
+                            <button class="btn btn-danger" onclick="limparLogs()">
+                                <i class="fas fa-trash me-1"></i>
+                                Limpar Logs
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filtros dos Logs -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="form-label">Nível</label>
+                            <select class="form-select" id="filterLogNivel">
+                                <option value="">Todos</option>
+                                <option value="info">Info</option>
+                                <option value="success">Success</option>
+                                <option value="warning">Warning</option>
+                                <option value="error">Error</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Módulo</label>
+                            <select class="form-select" id="filterLogModulo">
+                                <option value="">Todos</option>
+                                <option value="Pedidos">Pedidos</option>
+                                <option value="Estoque">Estoque</option>
+                                <option value="Impressão">Impressão</option>
+                                <option value="Sistema">Sistema</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Usuário</label>
+                            <select class="form-select" id="filterLogUsuario">
+                                <option value="">Todos</option>
+                                <option value="Sistema">Sistema</option>
+                                <option value="Administrador">Administrador</option>
+                                <option value="Designer1">Designer1</option>
+                                <option value="Designer2">Designer2</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">&nbsp;</label>
+                            <button class="btn btn-primary d-block w-100" onclick="filtrarLogs()">
+                                <i class="fas fa-filter me-1"></i>
+                                Filtrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tabela de Logs -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="logsTable">
+                            <thead>
+                                <tr>
+                                    <th>Data/Hora</th>
+                                    <th>Nível</th>
+                                    <th>Usuário</th>
+                                    <th>Módulo</th>
+                                    <th>Ação</th>
+                                    <th>Descrição</th>
+                                    <th>IP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dados serão carregados via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modais -->
+    
+    <!-- Modal de Detalhes do Pedido -->
+    <div class="modal fade" id="pedidoModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-shopping-cart me-2"></i>
+                        Detalhes do Pedido
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="pedidoModalContent">
+                    <!-- Conteúdo será carregado via JavaScript -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary" onclick="processarPedido()">Processar Pedido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Upload de Arte -->
+    <div class="modal fade" id="uploadArteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-palette me-2"></i>
+                        Upload de Arte
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="uploadArteForm">
+                        <div class="mb-3">
+                            <label class="form-label">Pedido</label>
+                            <input type="text" class="form-control" id="uploadPedidoId" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">SKU</label>
+                            <input type="text" class="form-control" id="uploadSku" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Arquivo da Arte *</label>
+                            <input type="file" class="form-control" id="uploadArquivo" accept=".png,.jpg,.jpeg,.pdf" required>
+                            <div class="form-text">Formatos aceitos: PNG, JPG, PDF (máx. 10MB)</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Observações</label>
+                            <textarea class="form-control" id="uploadObservacoes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="salvarUploadArte()">
+                        <i class="fas fa-upload me-1"></i>
+                        Fazer Upload
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    
+    <!-- Dados do sistema -->
+    <script src="js/estoque-script.js"></script>
+    <script src="js/pedidos-data.js"></script>
+    <script src="js/pedidos-script.js"></script>
+</body>
+</html>
+
