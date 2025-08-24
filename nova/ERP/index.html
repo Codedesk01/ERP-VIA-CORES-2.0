@@ -1,0 +1,1085 @@
+    
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gerenciamento - SaaS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/heroicons@2.0.13/24/outline/style.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+        .sidebar-hidden {
+            transform: translateX(-100%);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .log-container {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .rounded-box {
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .tooltip {
+            position: relative;
+        }
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1F2937;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 10;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar-open {
+                transform: translateX(0);
+            }
+            .ml-64 {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Tela de Login -->
+<div id="login-screen" class="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-indigo-600">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 class="text-2xl font-semibold text-center mb-6 text-gray-800">Login</h2>
+        <div class="flex items-center mb-4">
+            <svg class="w-6 h-6 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            <input id="username" type="text" placeholder="Usuário" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div class="flex items-center mb-4">
+            <svg class="w-6 h-6 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-2.76-2.24-5-5-5S2 8.24 2 11m20 0c0-2.76-2.24-5-5-5s-5 2.24-5 5m-5 5v5m10-5v5"/></svg>
+            <input id="password" type="password" placeholder="Senha" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <button onclick="login()" class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition flex items-center justify-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14"/></svg>
+            Entrar
+        </button>
+        <p class="text-center mt-4"><a href="#" onclick="changePasswordFromLogin()" class="text-blue-600 hover:underline">Alterar Senha</a></p>
+    </div>
+</div>
+
+    <!-- Main App -->
+    <div id="main-app" class="hidden">
+        <!-- Sidebar -->
+        <div id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-gray-800 text-white sidebar">
+            <div class="p-4 border-b border-gray-700 flex items-center">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <h1 class="text-xl font-bold">Sistema SaaS</h1>
+            </div>
+            <div class="p-4">
+                <p class="text-sm">Bem-vindo, <span id="current-user"></span></p>
+            </div>
+            <nav id="nav-menu" class="p-4 space-y-2"></nav>
+            <button onclick="logout()" class="w-full text-left p-4 hover:bg-gray-700 transition flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                Logout
+            </button>
+        </div>
+
+        <!-- Toggle Sidebar Button (Mobile) -->
+        <button id="toggle-sidebar" class="md:hidden fixed top-4 left-4 z-50 bg-blue-600 text-white p-2 rounded-lg">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+
+        <!-- Main Content -->
+        <div class="ml-64 p-6 min-h-screen">
+            <!-- Admin Dashboard -->
+            <div id="admin-dashboard" class="hidden fade-in">
+                <h2 class="text-3xl font-bold mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    Dashboard Admin Master
+                </h2>
+                <div id="metrics" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"></div>
+                <div class="bg-white p-6 rounded-box">
+                    <h3 class="text-xl font-semibold mb-4 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        Logs em Tempo Real
+                    </h3>
+                    <div id="logs" class="log-container text-sm"></div>
+                </div>
+                <div class="bg-white p-6 rounded-box mt-6">
+                    <h3 class="text-xl font-semibold mb-4 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        Relatórios Gerais
+                    </h3>
+                    <canvas id="general-report-chart" class="w-full max-w-lg"></canvas>
+                </div>
+            </div>
+
+            <!-- Gestão de Usuários -->
+            <div id="user-management" class="hidden fade-in">
+                <h2 class="text-3xl font-bold mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    Gestão de Usuários
+                </h2>
+                <div class="bg-white p-6 rounded-box mb-6">
+                    <h3 class="text-lg font-semibold mb-4">Criar Usuário</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <input id="new-user" type="text" placeholder="Novo Usuário" class="p-3 border rounded-lg">
+                        <input id="new-pass" type="password" placeholder="Senha" class="p-3 border rounded-lg">
+                        <select id="new-role" class="p-3 border rounded-lg">
+                            <option value="admin-master">Admin Master</option>
+                            <option value="admin-depart">Admin Depart</option>
+                            <option value="user">Usuário</option>
+                        </select>
+                    </div>
+                    <button onclick="createUser()" class="mt-4 bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        Criar Usuário
+                    </button>
+                </div>
+                <div class="bg-white p-6 rounded-box">
+                    <h3 class="text-lg font-semibold mb-4">Lista de Usuários</h3>
+                    <div class="table-container">
+                        <table id="users-table" class="w-full text-sm">
+                            <thead><tr><th class="p-3">Usuário</th><th class="p-3">Role</th><th class="p-3">Ações</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-box mt-6">
+                    <h3 class="text-lg font-semibold mb-4">Configuração de Permissões</h3>
+                    <select id="perm-user" class="p-3 border rounded-lg mb-4"></select>
+                    <div id="modules-perm" class="grid grid-cols-2 gap-4"></div>
+                    <button onclick="savePermissions()" class="mt-4 bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        Salvar Permissões
+                    </button>
+                </div>
+            </div>
+
+            <!-- Estoque -->
+            <div id="estoque" class="hidden fade-in">
+                <h2 class="text-3xl font-bold mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0v6a2 2 0 01-2 2H6a2 2 0 01-2-2V7m16 0v6a2 2 0 01-2 2H6a2 2 0 01-2-2V7m16 0l-8 4-8-4"/></svg>
+                    Estoque
+                </h2>
+                <div class="bg-white p-6 rounded-box mb-6">
+                    <h3 class="text-lg font-semibold mb-4">Cadastro de Itens</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <input id="item-sku" type="text" placeholder="SKU" class="p-3 border rounded-lg">
+                        <input id="item-desc" type="text" placeholder="Descrição" class="p-3 border rounded-lg">
+                        <input id="item-qtd" type="number" min="0" placeholder="Quantidade" class="p-3 border rounded-lg">
+                        <select id="item-prateleira" class="p-3 border rounded-lg">
+                            <option value="">Prateleira</option>
+                            <option value="Prateleira 1">Prateleira 1</option>
+                            <option value="Prateleira 2">Prateleira 2</option>
+                            <!-- Adicione mais prateleiras conforme necessário, até 300 se for o caso, mas para simplicidade, assumimos poucas -->
+                        </select>
+                        <input id="item-pos" type="number" min="1" max="300" placeholder="Posição (1-300)" class="p-3 border rounded-lg">
+                    </div>
+                    <button onclick="addItem()" class="mt-4 bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        Adicionar Item
+                    </button>
+                </div>
+                <div class="bg-white p-6 rounded-box mb-6">
+                    <h3 class="text-lg font-semibold mb-4">Lista de Itens</h3>
+                    <input id="search-estoque" type="text" placeholder="Buscar por SKU ou Descrição" class="w-full p-3 border rounded-lg mb-4" oninput="filterItens()">
+                    <div class="table-container">
+                        <table id="itens-table" class="w-full text-sm">
+                            <thead><tr><th class="p-3">SKU</th><th class="p-3">Descrição</th><th class="p-3">Qtd</th><th class="p-3">Prateleira</th><th class="p-3">Posição</th><th class="p-3">Ações</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-box mb-6">
+                    <h3 class="text-lg font-semibold mb-4">Movimentações</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <select id="mov-type" class="p-3 border rounded-lg">
+                            <option>Entrada</option>
+                            <option>Saída</option>
+                            <option>Ajuste</option>
+                        </select>
+                        <input id="mov-sku" type="text" placeholder="SKU" class="p-3 border rounded-lg">
+                        <input id="mov-qtd" type="number" min="0" placeholder="Quantidade" class="p-3 border rounded-lg">
+                        <input id="mov-motivo" type="text" placeholder="Motivo (opcional)" class="p-3 border rounded-lg">
+                    </div>
+                    <button onclick="movItem()" class="mt-4 bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        Registrar Movimentação
+                    </button>
+                </div>
+                <div class="bg-white p-6 rounded-box mb-6 report-section">
+                    <h3 class="text-lg font-semibold mb-4">Relatórios Detalhados</h3>
+                    <div id="estoque-report-detailed" class="text-sm mb-4"></div>
+                    <canvas id="estoque-report-chart" class="w-full max-w-lg"></canvas>
+                </div>
+            </div>
+
+            <!-- Pedidos -->
+            <div id="pedidos" class="hidden fade-in">
+                <h2 class="text-3xl font-bold mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    Pedidos
+                </h2>
+                <div class="bg-white p-6 rounded-box mb-6">
+                    <h3 class="text-lg font-semibold mb-4">Importação de Pedidos em Massa</h3>
+                    <textarea id="pedidos-massa" placeholder="Formato: SKU,Qtd,Marketplace,Dia Envio" class="w-full p-3 border rounded-lg"></textarea>
+                    <button onclick="importPedidos()" class="mt-4 bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                        Importar
+                    </button>
+                </div>
+                <div class="bg-white p-6 rounded-box">
+                    <h3 class="text-lg font-semibold mb-4">Lista de Pedidos</h3>
+                    <div class="table-container">
+                        <table id="pedidos-table" class="w-full text-sm">
+                            <thead><tr><th class="p-3">SKU</th><th class="p-3">Qtd</th><th class="p-3">Marketplace</th><th class="p-3">Dia Envio</th><th class="p-3">Status</th><th class="p-3">Estoque (Qtd/Posição)</th><th class="p-3">Ações</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-box mt-6 report-section">
+                    <h3 class="text-lg font-semibold mb-4">Relatórios</h3>
+                    <canvas id="pedidos-report-chart" class="w-full max-w-lg"></canvas>
+                </div>
+            </div>
+
+            <!-- Banco de Imagens -->
+            <div id="banco-imagens" class="hidden fade-in">
+                <h2 class="text-3xl font-bold mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    Banco de Imagens
+                </h2>
+                <div class="bg-white p-6 rounded-box mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <input id="search-sku" type="text" placeholder="Buscar SKU" class="p-3 border rounded-lg">
+                        <select id="impressora" class="p-3 border rounded-lg">
+                            <option>imp1</option>
+                            <option>imp2</option>
+                            <option>imp3</option>
+                            <option>lona</option>
+                        </select>
+                        <button onclick="checkImages()" class="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Check
+                        </button>
+                    </div>
+                    <div id="images-result" class="mt-4"></div>
+                </div>
+                <div class="bg-white p-6 rounded-box">
+                    <h3 class="text-lg font-semibold mb-4">Histórico</h3>
+                    <div id="images-history"></div>
+                </div>
+            </div>
+
+            <!-- Produção -->
+            <div id="producao" class="hidden fade-in">
+                <h2 class="text-3xl font-bold mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                    Produção
+                </h2>
+                <div class="bg-white p-6 rounded-box mb-6">
+                    <h3 class="text-lg font-semibold mb-4">Fila de Pedidos</h3>
+                    <div id="producao-fila" class="space-y-4"></div>
+                </div>
+                <div class="bg-white p-6 rounded-box">
+                    <h3 class="text-lg font-semibold mb-4">Histórico de Progresso</h3>
+                    <div class="flex space-x-4 mb-4">
+                        <input id="filter-sku" type="text" placeholder="Filtro SKU" class="p-3 border rounded-lg">
+                        <button onclick="filterProducao()" class="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1m-7 4H3m10 4H3m7 4H3"/></svg>
+                            Filtrar
+                        </button>
+                    </div>
+                    <div id="producao-history" class="mt-4"></div>
+                </div>
+                <div class="bg-white p-6 rounded-box mt-6 report-section">
+                    <h3 class="text-lg font-semibold mb-4">Relatórios</h3>
+                    <canvas id="producao-report-chart" class="w-full max-w-lg"></canvas>
+                </div>
+            </div>
+
+            <!-- Costura -->
+            <div id="costura" class="hidden fade-in">
+                <h2 class="text-3xl font-bold mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    Costura
+                </h2>
+                <div class="bg-white p-6 rounded-box mb-6">
+                    <h3 class="text-lg font-semibold mb-4">Fila de Pedidos</h3>
+                    <div id="costura-fila" class="space-y-4"></div>
+                </div>
+                <div class="bg-white p-6 rounded-box report-section">
+                    <h3 class="text-lg font-semibold mb-4">Relatórios de Eficiência</h3>
+                    <canvas id="costura-report-chart" class="w-full max-w-lg"></canvas>
+                </div>
+            </div>
+
+            <!-- Expedição -->
+            <div id="expedicao" class="hidden fade-in">
+                <h2 class="text-3xl font-bold mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                    Expedição
+                </h2>
+                <div class="bg-white p-6 rounded-box mb-6">
+                    <h3 class="text-lg font-semibold mb-4">Fila de Pedidos</h3>
+                    <div id="expedicao-fila" class="space-y-4"></div>
+                </div>
+                <div class="bg-white p-6 rounded-box mb-6">
+                    <h3 class="text-lg font-semibold mb-4">Conferência (3 Etapas)</h3>
+                    <div id="conferencia"></div>
+                </div>
+                <div class="bg-white p-6 rounded-box">
+                    <h3 class="text-lg font-semibold mb-4">Histórico de Envios</h3>
+                    <div id="expedicao-history"></div>
+                </div>
+                <div class="bg-white p-6 rounded-box mt-6 report-section">
+                    <h3 class="text-lg font-semibold mb-4">Relatórios</h3>
+                    <canvas id="expedicao-report-chart" class="w-full max-w-lg"></canvas>
+                </div>
+            </div>
+
+            <!-- Logs do Sistema -->
+            <div id="system-logs" class="hidden fade-in">
+                <h2 class="text-3xl font-bold mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Logs do Sistema
+                </h2>
+                <div class="bg-white p-6 rounded-box">
+                    <div id="full-logs" class="log-container text-sm"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // Dados simulados em memória
+    let users = JSON.parse(localStorage.getItem('users')) || [
+        { username: 'admin', password: 'admin', role: 'admin-master', permissions: ['all'] }
+    ];
+    let currentUser = null;
+    let logs = JSON.parse(localStorage.getItem('logs')) || [];
+    let itensEstoque = JSON.parse(localStorage.getItem('itensEstoque')) || [];
+    let pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
+    let images = JSON.parse(localStorage.getItem('images')) || [];
+    let producao = JSON.parse(localStorage.getItem('producao')) || [];
+    let costura = JSON.parse(localStorage.getItem('costura')) || [];
+    let expedicao = JSON.parse(localStorage.getItem('expedicao')) || [];
+    let metrics = { estoque: 0, pedidos: 0, imagens: 0, producao: 0, costura: 0, expedicao: 0 };
+    let charts = {};
+
+    // Salva todos os dados no localStorage
+    function saveData() {
+        localStorage.setItem('users', JSON.stringify(users));
+        localStorage.setItem('logs', JSON.stringify(logs));
+        localStorage.setItem('itensEstoque', JSON.stringify(itensEstoque));
+        localStorage.setItem('pedidos', JSON.stringify(pedidos));
+        localStorage.setItem('images', JSON.stringify(images));
+        localStorage.setItem('producao', JSON.stringify(producao));
+        localStorage.setItem('costura', JSON.stringify(costura));
+        localStorage.setItem('expedicao', JSON.stringify(expedicao));
+    }
+
+    // Registra uma ação no log
+    function logAction(action) {
+        const logEntry = `${new Date().toLocaleString()} - Usuário: ${currentUser?.username || 'Anônimo'} - Ação: ${action}`;
+        logs.push(logEntry);
+        saveData();
+        updateLogs();
+    }
+
+    // Atualiza os logs na UI
+    function updateLogs() {
+        document.getElementById('logs').innerHTML = logs.slice(-50).map(l => `<div class="border-b py-2">${l}</div>`).join('');
+        document.getElementById('full-logs').innerHTML = logs.map(l => `<div class="border-b py-2">${l}</div>`).join('');
+    }
+
+    // Login
+    function login() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const user = users.find(u => u.username === username && u.password === password);
+        if (user) {
+            currentUser = user;
+            document.getElementById('current-user').innerText = username;
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            loadMenu();
+            logAction('Login realizado');
+            showSection(currentUser.role === 'admin-master' ? 'admin-dashboard' : 'estoque');
+        } else {
+            alert('Credenciais inválidas');
+        }
+    }
+
+    // Logout
+    function logout() {
+        logAction('Logout realizado');
+        currentUser = null;
+        document.getElementById('login-screen').classList.remove('hidden');
+        document.getElementById('main-app').classList.add('hidden');
+        hideAllSections();
+    }
+
+    // Alterar Senha
+    function changePassword() {
+        const newPassword = prompt('Digite a nova senha:');
+        if (newPassword && newPassword.trim().length >= 6) {
+            currentUser.password = newPassword.trim();
+            saveData();
+            logAction(`Senha alterada para ${currentUser.username}`);
+            alert('Senha alterada com sucesso');
+        } else {
+            alert('A nova senha deve ter pelo menos 6 caracteres');
+        }
+    }
+
+    // Oculta todas as seções
+    function hideAllSections() {
+        const sections = ['admin-dashboard', 'user-management', 'estoque', 'pedidos', 'banco-imagens', 'producao', 'costura', 'expedicao', 'system-logs'];
+        sections.forEach(id => document.getElementById(id).classList.add('hidden'));
+    }
+
+    // Mostra uma seção específica
+    function showSection(id) {
+        const userPerms = currentUser.permissions || [];
+        if (id === 'admin-dashboard' && currentUser.role !== 'admin-master') {
+            alert('Acesso negado: Apenas Admin Master pode acessar o Dashboard');
+            return;
+        }
+        if (id === 'user-management' && currentUser.role !== 'admin-master') {
+            alert('Acesso negado: Apenas Admin Master pode gerenciar usuários');
+            return;
+        }
+        if (id !== 'admin-dashboard' && id !== 'user-management' && id !== 'system-logs' && !userPerms.includes('all') && !userPerms.includes(id)) {
+            alert(`Acesso negado: Você não tem permissão para acessar o módulo ${id}`);
+            return;
+        }
+        hideAllSections();
+        document.getElementById(id).classList.remove('hidden');
+        if (currentUser.role !== 'admin-master') {
+            const section = document.getElementById(id);
+            if (section) {
+                section.querySelectorAll('.report-section').forEach(el => el.classList.add('hidden'));
+            }
+        } else {
+            const section = document.getElementById(id);
+            if (section) {
+                section.querySelectorAll('.report-section').forEach(el => el.classList.remove('hidden'));
+            }
+        }
+        if (id === 'admin-dashboard') loadMetrics();
+        if (id === 'user-management') loadUsers();
+        if (id === 'estoque') loadItens();
+        if (id === 'pedidos') loadPedidos();
+        if (id === 'banco-imagens') loadImagesHistory();
+        if (id === 'producao') loadProducao();
+        if (id === 'costura') loadCostura();
+        if (id === 'expedicao') loadExpedicao();
+        if (id === 'system-logs') updateLogs();
+    }
+
+    // Carrega o menu com base nas permissões
+    function loadMenu() {
+        const nav = document.getElementById('nav-menu');
+        nav.innerHTML = '';
+        const perms = currentUser.permissions || [];
+        
+        // Adiciona opção de alterar senha para todos os usuários
+        nav.innerHTML += `<button onclick="changePassword()" class="block w-full text-left p-3 hover:bg-gray-700 rounded-lg transition flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 00-2-2H7a2 2 0 00-2 2v6a2 2 0 002 2h6a2 2 0 002-2V7zM9 10V7m0 3h3m-3 0v3"></svg>Alterar Senha</button>`;
+        
+        if (currentUser.role === 'admin-master') {
+            nav.innerHTML += `<button onclick="showSection('admin-dashboard')" class="block w-full text-left p-3 hover:bg-gray-700 rounded-lg transition flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Dashboard</button>`;
+            nav.innerHTML += `<button onclick="showSection('user-management')" class="block w-full text-left p-3 hover:bg-gray-700 rounded-lg transition flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>Gestão Usuários</button>`;
+            nav.innerHTML += `<button onclick="showSection('system-logs')" class="block w-full text-left p-3 hover:bg-gray-700 rounded-lg transition flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Logs Sistema</button>`;
+        }
+        if (perms.includes('all') || perms.includes('estoque')) nav.innerHTML += `<button onclick="showSection('estoque')" class="block w-full text-left p-3 hover:bg-gray-700 rounded-lg transition flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0v6a2 2 0 01-2 2H6a2 2 0 01-2-2V7m16 0v6a2 2 0 01-2 2H6a2 2 0 01-2-2V7m16 0l-8 4-8-4"/></svg>Estoque</button>`;
+        if (perms.includes('all') || perms.includes('pedidos')) nav.innerHTML += `<button onclick="showSection('pedidos')" class="block w-full text-left p-3 hover:bg-gray-700 rounded-lg transition flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>Pedidos</button>`;
+        if (perms.includes('all') || perms.includes('banco-imagens')) nav.innerHTML += `<button onclick="showSection('banco-imagens')" class="block w-full text-left p-3 hover:bg-gray-700 rounded-lg transition flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>Banco Imagens</button>`;
+        if (perms.includes('all') || perms.includes('producao')) nav.innerHTML += `<button onclick="showSection('producao')" class="block w-full text-left p-3 hover:bg-gray-700 rounded-lg transition flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>Produção</button>`;
+        if (perms.includes('all') || perms.includes('costura')) nav.innerHTML += `<button onclick="showSection('costura')" class="block w-full text-left p-3 hover:bg-gray-700 rounded-lg transition flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>Costura</button>`;
+        if (perms.includes('all') || perms.includes('expedicao')) nav.innerHTML += `<button onclick="showSection('expedicao')" class="block w-full text-left p-3 hover:bg-gray-700 rounded-lg transition flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>Expedição</button>`;
+    }
+
+    // Carrega métricas do dashboard
+    function loadMetrics() {
+        metrics.estoque = itensEstoque.length;
+        metrics.pedidos = pedidos.length;
+        metrics.imagens = images.length;
+        metrics.producao = producao.length;
+        metrics.costura = costura.length;
+        metrics.expedicao = expedicao.length;
+        const metricsDiv = document.getElementById('metrics');
+        metricsDiv.innerHTML = '';
+        for (let key in metrics) {
+            metricsDiv.innerHTML += `<div class="bg-white p-4 rounded-box text-center">
+                <h3 class="text-lg font-semibold">${key.charAt(0).toUpperCase() + key.slice(1)}</h3>
+                <p class="text-2xl font-bold text-blue-600">${metrics[key]}</p>
+            </div>`;
+        }
+        loadGeneralReportChart();
+        loadModuleCharts();
+    }
+
+    // Carrega o gráfico geral
+    function loadGeneralReportChart() {
+        if (charts['general-report-chart']) charts['general-report-chart'].destroy();
+        const ctx = document.getElementById('general-report-chart').getContext('2d');
+        charts['general-report-chart'] = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(metrics),
+                datasets: [{
+                    label: 'Métricas Gerais',
+                    data: Object.values(metrics),
+                    backgroundColor: ['#2563EB', '#16A34A', '#7C3AED', '#DC2626', '#F59E0B', '#6B7280'],
+                    borderColor: ['#1E40AF', '#15803D', '#6D28D9', '#B91C1C', '#D97706', '#4B5563'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+
+    // Carrega gráficos dos módulos
+    function loadModuleCharts() {
+        if (currentUser.role !== 'admin-master') return; // Não carregar gráficos se não for admin-master
+
+        // Estoque
+        if (charts['estoque-report-chart']) charts['estoque-report-chart'].destroy();
+        const estoqueCtx = document.getElementById('estoque-report-chart')?.getContext('2d');
+        if (estoqueCtx) {
+            charts['estoque-report-chart'] = new Chart(estoqueCtx, {
+                type: 'pie',
+                data: {
+                    labels: itensEstoque.map(i => i.sku),
+                    datasets: [{
+                        label: 'Quantidade em Estoque',
+                        data: itensEstoque.map(i => i.qtd),
+                        backgroundColor: ['#2563EB', '#16A34A', '#7C3AED', '#DC2626', '#F59E0B'],
+                        borderColor: ['#1E40AF', '#15803D', '#6D28D9', '#B91C1C', '#D97706'],
+                        borderWidth: 1
+                    }]
+                },
+                options: { responsive: true }
+            });
+        }
+
+        loadEstoqueDetailedReport();
+
+        // Pedidos
+        if (charts['pedidos-report-chart']) charts['pedidos-report-chart'].destroy();
+        const pedidosCtx = document.getElementById('pedidos-report-chart')?.getContext('2d');
+        if (pedidosCtx) {
+            const statusCounts = pedidos.reduce((acc, p) => {
+                acc[p.status] = (acc[p.status] || 0) + 1;
+                return acc;
+            }, {});
+            charts['pedidos-report-chart'] = new Chart(pedidosCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(statusCounts),
+                    datasets: [{
+                        label: 'Pedidos por Status',
+                        data: Object.values(statusCounts),
+                        backgroundColor: ['#2563EB', '#16A34A', '#7C3AED'],
+                        borderColor: ['#1E40AF', '#15803D', '#6D28D9'],
+                        borderWidth: 1
+                    }]
+                },
+                options: { responsive: true }
+            });
+        }
+
+        // Produção
+        if (charts['producao-report-chart']) charts['producao-report-chart'].destroy();
+        const producaoCtx = document.getElementById('producao-report-chart')?.getContext('2d');
+        if (producaoCtx) {
+            charts['producao-report-chart'] = new Chart(producaoCtx, {
+                type: 'bar',
+                data: {
+                    labels: producao.map(p => p.sku),
+                    datasets: [{
+                        label: 'Pedidos em Produção',
+                        data: producao.map(p => p.qtd),
+                        backgroundColor: '#2563EB',
+                        borderColor: '#1E40AF',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        // Costura
+        if (charts['costura-report-chart']) charts['costura-report-chart'].destroy();
+        const costuraCtx = document.getElementById('costura-report-chart')?.getContext('2d');
+        if (costuraCtx) {
+            charts['costura-report-chart'] = new Chart(costuraCtx, {
+                type: 'bar',
+                data: {
+                    labels: costura.map(c => c.sku),
+                    datasets: [{
+                        label: 'Eficiência Costura',
+                        data: costura.map(() => 1), // Simulação: 1 check por item
+                        backgroundColor: '#16A34A',
+                        borderColor: '#15803D',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        // Expedição
+        if (charts['expedicao-report-chart']) charts['expedicao-report-chart'].destroy();
+        const expedicaoCtx = document.getElementById('expedicao-report-chart')?.getContext('2d');
+        if (expedicaoCtx) {
+            charts['expedicao-report-chart'] = new Chart(expedicaoCtx, {
+                type: 'pie',
+                data: {
+                    labels: expedicao.map(e => e.sku),
+                    datasets: [{
+                        label: 'Itens Expedidos',
+                        data: expedicao.map(() => 1),
+                        backgroundColor: ['#7C3AED', '#DC2626', '#F59E0B'],
+                        borderColor: ['#6D28D9', '#B91C1C', '#D97706'],
+                        borderWidth: 1
+                    }]
+                },
+                options: { responsive: true }
+            });
+        }
+    }
+
+    // Gestão de Usuários
+    function createUser() {
+        const username = document.getElementById('new-user').value.trim();
+        const password = document.getElementById('new-pass').value.trim();
+        const role = document.getElementById('new-role').value;
+        if (!username || !password || password.length < 6) {
+            alert('Usuário e senha (mínimo 6 caracteres) são obrigatórios');
+            return;
+        }
+        if (users.find(u => u.username === username)) {
+            alert('Usuário já existe');
+            return;
+        }
+        users.push({ username, password, role, permissions: [] });
+        saveData();
+        loadUsers();
+        logAction(`Usuário criado: ${username}`);
+    }
+
+    function loadUsers() {
+        const table = document.getElementById('users-table').querySelector('tbody');
+        table.innerHTML = '';
+        users.forEach((u, i) => {
+            table.innerHTML += `<tr><td class="p-3">${u.username}</td><td class="p-3">${u.role}</td><td class="p-3"><button onclick="deleteUser(${i})" class="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>Excluir</button></td></tr>`;
+        });
+        const permUser = document.getElementById('perm-user');
+        permUser.innerHTML = '<option value="">Selecione um usuário</option>';
+        users.forEach(u => {
+            permUser.innerHTML += `<option value="${u.username}">${u.username}</option>`;
+        });
+        loadModulesPerm();
+    }
+
+    function deleteUser(index) {
+        if (users[index].username === currentUser.username) {
+            alert('Você não pode excluir seu próprio usuário');
+            return;
+        }
+        const username = users[index].username;
+        users.splice(index, 1);
+        saveData();
+        loadUsers();
+        logAction(`Usuário excluído: ${username}`);
+    }
+
+    function loadModulesPerm() {
+        const modules = ['estoque', 'pedidos', 'banco-imagens', 'producao', 'costura', 'expedicao'];
+        const div = document.getElementById('modules-perm');
+        div.innerHTML = '';
+        modules.forEach(m => {
+            div.innerHTML += `<label class="flex items-center"><input type="checkbox" value="${m}" class="mr-2"> ${m.charAt(0).toUpperCase() + m.slice(1)}</label>`;
+        });
+        const permUser = document.getElementById('perm-user');
+        permUser.addEventListener('change', () => {
+            const username = permUser.value;
+            const user = users.find(u => u.username === username);
+            if (user) {
+                const checkboxes = document.querySelectorAll('#modules-perm input');
+                checkboxes.forEach(cb => {
+                    cb.checked = user.permissions.includes(cb.value);
+                });
+            }
+        });
+    }
+
+    function savePermissions() {
+        const username = document.getElementById('perm-user').value;
+        if (!username) {
+            alert('Selecione um usuário');
+            return;
+        }
+        const checkboxes = document.querySelectorAll('#modules-perm input:checked');
+        const perms = Array.from(checkboxes).map(cb => cb.value);
+        const user = users.find(u => u.username === username);
+        user.permissions = perms;
+        saveData();
+        logAction(`Permissões salvas para ${username}`);
+        alert('Permissões salvas');
+    }
+
+    // Estoque Melhorado
+    function addItem() {
+        const sku = document.getElementById('item-sku').value.trim();
+        const desc = document.getElementById('item-desc').value.trim();
+        const qtd = parseInt(document.getElementById('item-qtd').value);
+        const prateleira = document.getElementById('item-prateleira').value;
+        const pos = parseInt(document.getElementById('item-pos').value);
+        if (!sku || !desc || isNaN(qtd) || qtd < 0 || !prateleira || isNaN(pos) || pos < 1 || pos > 300) {
+            alert('Preencha todos os campos corretamente (quantidade ≥ 0, posição 1-300)');
+            return;
+        }
+        if (itensEstoque.find(i => i.sku === sku)) {
+            alert('SKU já existe');
+            return;
+        }
+        itensEstoque.push({ sku, desc, qtd, prateleira, pos, history: [] });
+        saveData();
+        loadItens();
+        logAction(`Item adicionado: ${sku}`);
+    }
+
+    function loadItens() {
+        const table = document.getElementById('itens-table').querySelector('tbody');
+        table.innerHTML = '';
+        itensEstoque.forEach((item, i) => {
+            table.innerHTML += `<tr><td class="p-3">${item.sku}</td><td class="p-3">${item.desc}</td><td class="p-3">${item.qtd}</td><td class="p-3">${item.prateleira}</td><td class="p-3">${item.pos}</td><td class="p-3"><button onclick="baixaItem(${i})" class="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>Baixa</button></td></tr>`;
+        });
+        loadModuleCharts();
+    }
+
+    function filterItens() {
+        const search = document.getElementById('search-estoque').value.trim().toLowerCase();
+        const table = document.getElementById('itens-table').querySelector('tbody');
+        table.innerHTML = '';
+        const filtered = itensEstoque.filter(item => item.sku.toLowerCase().includes(search) || item.desc.toLowerCase().includes(search));
+        filtered.forEach((item, i) => {
+            table.innerHTML += `<tr><td class="p-3">${item.sku}</td><td class="p-3">${item.desc}</td><td class="p-3">${item.qtd}</td><td class="p-3">${item.prateleira}</td><td class="p-3">${item.pos}</td><td class="p-3"><button onclick="baixaItem(${i})" class="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>Baixa</button></td></tr>`;
+        });
+    }
+
+    function baixaItem(index) {
+        const motivos = ['venda', 'devolução', 'outros'];
+        const motivo = prompt(`Motivo da baixa (${motivos.join(', ')}):`);
+        if (motivo && motivos.includes(motivo.toLowerCase())) {
+            const item = itensEstoque[index];
+            itensEstoque.splice(index, 1);
+            saveData();
+            loadItens();
+            logAction(`Baixa item: ${item.sku} - Motivo: ${motivo}`);
+        } else {
+            alert('Motivo inválido. Tente novamente.');
+        }
+    }
+
+    function movItem() {
+        const type = document.getElementById('mov-type').value;
+        const sku = document.getElementById('mov-sku').value.trim();
+        const qtd = parseInt(document.getElementById('mov-qtd').value);
+        const motivo = document.getElementById('mov-motivo').value.trim() || 'Não especificado';
+        const item = itensEstoque.find(i => i.sku === sku);
+        if (!item || isNaN(qtd) || qtd <= 0) {
+            alert('Item não encontrado ou quantidade inválida (deve ser > 0)');
+            return;
+        }
+        const oldQtd = item.qtd;
+        if (type === 'Entrada') {
+            item.qtd += qtd;
+        } else if (type === 'Saída') {
+            if (item.qtd < qtd) {
+                alert('Quantidade insuficiente em estoque');
+                return;
+            }
+            item.qtd -= qtd;
+        } else if (type === 'Ajuste') {
+            item.qtd = qtd;
+        }
+        item.history = item.history || [];
+        item.history.push({ type, qtd, motivo, date: new Date().toLocaleString(), user: currentUser.username });
+        saveData();
+        loadItens();
+        logAction(`Movimentação ${type} em ${sku}: ${qtd} (motivo: ${motivo})`);
+    }
+
+    function loadEstoqueDetailedReport() {
+        const div = document.getElementById('estoque-report-detailed');
+        div.innerHTML = '';
+        itensEstoque.forEach(item => {
+            const historyHtml = item.history ? item.history.map(h => `<div class="border-b py-1">${h.date} - ${h.user}: ${h.type} de ${h.qtd} (motivo: ${h.motivo})</div>`).join('') : 'Sem histórico';
+            div.innerHTML += `<div class="mb-4"><strong>${item.sku} (${item.desc}) - Qtd Atual: ${item.qtd}</strong><div class="ml-4">${historyHtml}</div></div>`;
+        });
+    }
+
+    // Pedidos (Integração melhorada com Estoque)
+    function importPedidos() {
+        const text = document.getElementById('pedidos-massa').value.trim();
+        const lines = text.split('\n');
+        let added = 0;
+        lines.forEach(line => {
+            const [sku, qtd, marketplace, dia] = line.split(',').map(s => s.trim());
+            if (sku && !isNaN(qtd) && parseInt(qtd) > 0 && marketplace && dia) {
+                pedidos.push({ sku, qtd: parseInt(qtd), marketplace, dia, status: 'Pendente', impressora: '' });
+                added++;
+            }
+        });
+        if (added > 0) {
+            saveData();
+            loadPedidos();
+            logAction(`Importados ${added} pedidos em massa`);
+            alert(`${added} pedidos importados com sucesso`);
+        } else {
+            alert('Nenhum pedido válido para importar');
+        }
+    }
+
+    function loadPedidos() {
+        const table = document.getElementById('pedidos-table').querySelector('tbody');
+        table.innerHTML = '';
+        pedidos.forEach((p, i) => {
+            const estoque = itensEstoque.find(i => i.sku === p.sku);
+            const estoqueInfo = estoque ? `${estoque.qtd} unid. (${estoque.prateleira} Pos. ${estoque.pos})` : 'Não (0 unid.)';
+            const estoqueClass = estoque && estoque.qtd >= p.qtd ? 'text-green-600' : 'text-red-600';
+            const classMotoboy = p.marketplace.toLowerCase() === 'whatsapp' ? 'text-red-600 font-bold' : '';
+            table.innerHTML += `<tr><td class="p-3 ${classMotoboy}">${p.sku}</td><td class="p-3">${p.qtd}</td><td class="p-3">${p.marketplace}</td><td class="p-3">${p.dia}</td><td class="p-3">${p.status}</td><td class="p-3 ${estoqueClass}">${estoqueInfo}</td><td class="p-3"><select id="imp-${i}" class="p-2 border rounded-lg"><option value="">Selecione</option><option>imp1</option><option>imp2</option><option>imp3</option><option>lona</option></select><button onclick="checkPedido(${i})" class="ml-2 bg-green-600 text-white p-2 rounded-lg hover:bg-green-700 flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Check</button></td></tr>`;
+        });
+        loadModuleCharts();
+    }
+
+    function checkPedido(index) {
+        const imp = document.getElementById(`imp-${index}`).value;
+        if (!imp) {
+            alert('Selecione uma impressora');
+            return;
+        }
+        const p = pedidos[index];
+        const item = itensEstoque.find(i => i.sku === p.sku);
+        if (!item || item.qtd < p.qtd) {
+            alert('Estoque insuficiente ou item não encontrado');
+            return;
+        }
+        p.impressora = imp;
+        p.status = 'Em Produção';
+        producao.push({ ...p });
+        // Baixa automática integrada
+        item.qtd -= p.qtd;
+        item.history = item.history || [];
+        item.history.push({ type: 'Saída', qtd: p.qtd, motivo: `Pedido ${p.marketplace} - ${p.dia}`, date: new Date().toLocaleString(), user: currentUser.username });
+        pedidos.splice(index, 1);
+        saveData();
+        loadPedidos();
+        loadProducao();
+        loadItens(); // Atualiza estoque após baixa
+        logAction(`Check em pedido: ${p.sku} com baixa automática no estoque`);
+    }
+
+    // Banco de Imagens
+    function searchImages() {
+        const sku = document.getElementById('search-sku').value.trim();
+        const result = images.filter(img => img.sku.toLowerCase().includes(sku.toLowerCase()));
+        document.getElementById('images-result').innerHTML = result.length > 0
+            ? result.map(r => `<div class="rounded-box p-4 bg-gray-50">${r.sku} - Imagens: ${r.images.join(', ')} - Marketplace: ${r.marketplace} - Impressora: ${r.impressora}</div>`).join('')
+            : '<div class="text-gray-500">Nenhuma imagem encontrada</div>';
+    }
+
+    function checkImages() {
+        const sku = document.getElementById('search-sku').value.trim();
+        const imp = document.getElementById('impressora').value;
+        if (!sku || !imp) {
+            alert('Preencha SKU e selecione impressora');
+            return;
+        }
+        images.push({ sku, images: [`${sku}_simulada.jpg`], marketplace: 'Simulado', impressora: imp });
+        saveData();
+        logAction(`Check imagens para ${sku} em ${imp}`);
+        searchImages();
+        loadImagesHistory();
+        alert('Check realizado');
+    }
+
+    function loadImagesHistory() {
+        document.getElementById('images-history').innerHTML = images.map(img => `<div class="rounded-box p-4 bg-gray-50">${img.sku} - ${img.marketplace} - Impressora: ${img.impressora}</div>`).join('');
+        loadMetrics();
+    }
+
+    // Produção
+    function loadProducao() {
+        const fila = document.getElementById('producao-fila');
+        fila.innerHTML = '';
+        producao.forEach((p, i) => {
+            const classMotoboy = p.dia.toLowerCase().includes('motoboy') ? 'text-red-600 font-bold' : '';
+            fila.innerHTML += `<div class="rounded-box p-4 bg-gray-50 ${classMotoboy}">${p.sku} - Qtd: ${p.qtd} - ${p.dia}<button onclick="checkProducao(${i})" class="ml-4 bg-green-600 text-white p-2 rounded-lg hover:bg-green-700 flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Check</button><button onclick="revertProducao(${i})" class="ml-2 bg-yellow-600 text-white p-2 rounded-lg hover:bg-yellow-700 flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>Reverter</button></div>`;
+        });
+        document.getElementById('producao-history').innerHTML = producao.map(p => `<div class="border-b py-2">${p.sku} - ${p.status} - ${p.dia}</div>`).join('');
+        loadModuleCharts();
+    }
+
+    function checkProducao(index) {
+        producao[index].status = 'Em Costura';
+        costura.push({ ...producao[index] });
+        producao.splice(index, 1);
+        saveData();
+        loadProducao();
+        loadCostura();
+        logAction(`Check produção: ${producao[index]?.sku || 'desconhecido'}`);
+    }
+
+    function revertProducao(index) {
+        const p = producao[index];
+        p.status = 'Pendente';
+        pedidos.push({ ...p });
+        // Reverter baixa no estoque
+        const item = itensEstoque.find(i => i.sku === p.sku);
+        if (item) {
+            item.qtd += p.qtd;
+            item.history.push({ type: 'Entrada', qtd: p.qtd, motivo: 'Reversão de Produção', date: new Date().toLocaleString(), user: currentUser.username });
+        }
+        producao.splice(index, 1);
+        saveData();
+        loadProducao();
+        loadPedidos();
+        loadItens();
+        logAction(`Reverteu produção: ${p.sku} com reversão no estoque`);
+    }
+
+    function filterProducao() {
+        const sku = document.getElementById('filter-sku').value.trim().toLowerCase();
+        const filtered = producao.filter(p => p.sku.toLowerCase().includes(sku));
+        document.getElementById('producao-history').innerHTML = filtered.length > 0
+            ? filtered.map(p => `<div class="border-b py-2">${p.sku} - ${p.status} - ${p.dia}</div>`).join('')
+            : '<div class="text-gray-500">Nenhum item encontrado</div>';
+    }
+
+    // Costura
+    function loadCostura() {
+        const fila = document.getElementById('costura-fila');
+        fila.innerHTML = '';
+        const userPerms = currentUser.permissions || [];
+        const filteredCostura = userPerms.includes('all') || userPerms.includes('costura') ? costura : costura.filter(c => c.sku.startsWith('PV'));
+        filteredCostura.forEach((p, i) => {
+            fila.innerHTML += `<div class="rounded-box p-4 bg-gray-50">${p.sku} - Qtd: ${p.qtd}<button onclick="checkCostura(${i})" class="ml-4 bg-green-600 text-white p-2 rounded-lg hover:bg-green-700 flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Check</button></div>`;
+        });
+        loadModuleCharts();
+    }
+
+    function checkCostura(index) {
+        costura[index].status = 'Em Expedição';
+        expedicao.push({ ...costura[index], checkStage: 1 });
+        costura.splice(index, 1);
+        saveData();
+        loadCostura();
+        loadExpedicao();
+        logAction(`Check costura: ${costura[index]?.sku || 'desconhecido'}`);
+    }
+
+    // Expedição
+    function loadExpedicao() {
+        const fila = document.getElementById('expedicao-fila');
+        fila.innerHTML = '';
+        expedicao.forEach((p, i) => {
+            const button = p.checkStage >= 3 ? '' : `<button onclick="advanceCheck(${i})" class="ml-4 bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Avançar</button>`;
+            fila.innerHTML += `<div class="rounded-box p-4 bg-gray-50">${p.sku} - Etapa: ${p.checkStage}/3${button}</div>`;
+        });
+        document.getElementById('conferencia').innerHTML = `
+            <div class="space-y-4">
+                <div>Etapa 1: Verificar ${expedicao.length > 0 ? `<span class="text-green-600">(${expedicao.filter(p => p.checkStage >= 1).length} concluídos)</span>` : ''}</div>
+                <div>Etapa 2: Embalar ${expedicao.length > 0 ? `<span class="text-green-600">(${expedicao.filter(p => p.checkStage >= 2).length} concluídos)</span>` : ''}</div>
+                <div>Etapa 3: Enviar ${expedicao.length > 0 ? `<span class="text-green-600">(${expedicao.filter(p => p.checkStage >= 3).length} concluídos)</span>` : ''}</div>
+            </div>`;
+        document.getElementById('expedicao-history').innerHTML = expedicao.filter(p => p.checkStage >= 3).map(p => `<div class="border-b py-2">${p.sku} - Enviado em ${new Date().toLocaleString()}</div>`).join('');
+        loadModuleCharts();
+    }
+
+    function advanceCheck(index) {
+        expedicao[index].checkStage = (expedicao[index].checkStage || 1) + 1;
+        if (expedicao[index].checkStage > 3) {
+            expedicao[index].checkStage = 3;
+        }
+        if (expedicao[index].checkStage === 3) {
+            logAction(`Envio concluído para ${expedicao[index].sku}`);
+            alert('Envio concluído');
+        } else {
+            logAction(`Avançou etapa ${expedicao[index].checkStage} para ${expedicao[index].sku}`);
+        }
+        saveData();
+        loadExpedicao();
+    }
+
+    // Toggle Sidebar (Mobile)
+    document.getElementById('toggle-sidebar').addEventListener('click', () => {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('sidebar-open');
+    });
+
+    // Inicialização
+    document.getElementById('main-app').classList.add('hidden');
+    updateLogs();
+
+
+        function changePasswordFromLogin() {
+        const username = document.getElementById('username').value.trim();
+        const user = users.find(u => u.username === username);
+        if (!user) {
+            alert('Usuário não encontrado');
+            return;
+        }
+        const newPassword = prompt('Digite a nova senha:');
+        if (newPassword && newPassword.trim().length >= 6) {
+            user.password = newPassword.trim();
+            saveData();
+            logAction(`Senha alterada para ${username} (via login)`);
+            alert('Senha alterada com sucesso');
+        } else {
+            alert('A nova senha deve ter pelo menos 6 caracteres');
+        }
+    }
+</script>
+</body>
+</html>
